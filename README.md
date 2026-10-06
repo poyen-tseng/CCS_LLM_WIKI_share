@@ -27,3 +27,7 @@
 [Oscilloscope_read](Oscilloscope_read) 是 LAUNCHXL-F280049C 的 GPIO Example 2：GPIO0 當輸入，經 qualification 反相驅動 GPIO6。用 CCS 匯入 [GPIO_EX2](Oscilloscope_read/GPIO_EX2) 即可建置。需要 CCS，以及安裝在 `C:\ti\C2000Ware_5_00_00_00` 的 C2000Ware。`Debug/` 是編譯結果，沒有放進這個 repository。
 
 做到哪裡、上升緣截圖與還沒量的項目見 [STATUS.md](Oscilloscope_read/STATUS.md)。操作規格在 [TASK.md](Oscilloscope_read/TASK.md)。
+
+## MCP
+
+[MCP](MCP) 只放本機 MCP 伺服器，一台伺服器一個子夾。目前有 [rigol-mso](MCP/rigol-mso)，用區域網路控制 RIGOL MSO5000。
