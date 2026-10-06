@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serial Plotter</title>
+<!--
+  Web Serial works on file:// in current Chrome and Edge (the page is a
+  trustworthy origin there). Firefox has no Web Serial API; the page shows
+  that message and does not call the API. If a Chromium build blocks serial
+  on file://, serve this folder and open the page over http:
+    python -m http.server 8000
+    http://localhost:8000/scope.html
+-->
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #10141b;
+    --panel: #181e28;
+    --ink: #e7edf5;
+    --muted: #93a0b5;
+    --grid: #2a3548;
+    --dac: #4c9dff;
+    --adc: #ffb020;
+    --line: #2c384c;
+    --bad: #ff6b6b;
+    --ok: #3dd68c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 14px/1.4 "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  header, .bar, .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+    padding: 10px 14px;
+  }
+  header { border-bottom: 1px solid var(--line); }
+  h1 { font-size: 16px; margin: 0 12px 0 0; font-weight: 650; }
+  button, select {
+    background: #243044;
+    color: var(--ink);
+    border: 1px solid #3a4b66;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font: inherit;
+  }
+  button:disabled { opacity: 0.45; }
+  button:not(:disabled) { cursor: pointer; }
+  .banner {
+    display: none;
+    margin: 10px 14px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #3a2430;
+    color: #ffd0d0;
+  }
+  .banner.show { display: block; }
+  #stage {
+    display: block;
+    width: calc(100% - 28px);
+    height: min(62vh, 520px);
+    margin: 8px 14px;
+    background: #0c1016;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .stats { color: var(--muted); }
+  .stats b { color: var(--ink); font-weight: 650; }
+  .swatch { display: inline-block; width: 12px; height: 3px; margin-right: 4px; vertical-align: middle; }
+  .swatch.dac { background: var(--dac); }
+  .swatch.adc { background: var(--adc); }
+  #state.ok { color: var(--ok); }
+  #state.bad { color: var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Serial Plotter</h1>
+  <span id="state">未連線</span>
+  <span><span class="swatch dac"></span>DAC</span>
+  <span><span class="swatch adc"></span>ADC</span>
+</header>
+<div id="banner" class="banner">這個瀏覽器沒有 Web Serial API。請用 Chrome 或 Edge 開啟此頁（Firefox 不支援）。</div>
+<div class="bar">
+  <button id="connect" type="button">連接</button>
+  <button id="disconnect" type="button" disabled>中斷</button>
+  <button id="pause" type="button" disabled>暫停</button>
+  <button id="export" type="button" disabled>匯出 CSV</button>
+  <label>時間窗
+    <select id="window">
+      <option value="2">2 秒</option>
+      <option value="5" selected>5 秒</option>
+      <option value="10">10 秒</option>
+    </select>
+  </label>
+</div>
+<canvas id="stage" width="960" height="480"></canvas>
+<div class="stats" id="stats"></div>
+<script>
+(function () {
+  "use strict";
+
+  var FS_V = 3.3;
+  var FS_CODE = 4095;
+  var MAX_SAMPLES = 30000;
+  var canvas = document.getElementById("stage");
+  var ctx = canvas.getContext("2d");
+  var banner = document.getElementById("banner");
+  var connectBtn = document.getElementById("connect");
+  var disconnectBtn = document.getElementById("disconnect");
+  var pauseBtn = document.getElementById("pause");
+  var exportBtn = document.getElementById("export");
+  var windowSel = document.getElementById("window");
+  var stateEl = document.getElementById("state");
+  var statsEl = document.getElementById("stats");
+
+  var serialOk = typeof navigator !== "undefined" && navigator.serial;
+  var port = null;
+  var reader = null;
+  var readerClosed = null;
+  var stopRequested = false;
+  var paused = false;
+  var frozenEnd = null;
+  var samples = [];
+  var malformed = 0;
+  var dropped = 0;
+  var t0 = null;
+
+  if (!serialOk) {
+    banner.className = "banner show";
+    connectBtn.disabled = true;
+  }
+
+  function codeToVolt(code) {
+    return code * FS_V / FS_CODE;
+  }
+
+  function setState(text, kind) {
+    stateEl.textContent = text;
+    stateEl.className = kind || "";
+  }
+
+  function handleLine(line) {
+    if (line === "dac,adc") {
+      return;
+    }
+    var match = /^(\d+),(\d+)$/.exec(line);
+    if (!match) {
+      malformed += 1;
+      return;
+    }
+    var dac = Number(match[1]);
+    var adc = Number(match[2]);
+    if (dac > FS_CODE || adc > FS_CODE) {
+      malformed += 1;
+      return;
+    }
+    var now = performance.now();
+    if (t0 === null) {
+      t0 = now;
+    }
+    samples.push({
+      t: (now - t0) / 1000,
+      dac: dac,
+      adc: adc
+    });
+    if (samples.length > MAX_SAMPLES) {
+      var overflow = samples.length - MAX_SAMPLES;
+      samples.splice(0, overflow);
+      dropped += overflow;
+    }
+  }
+
+  function windowed(endT, span) {
+    var start = endT - span;
+    var out = [];
+    var i = samples.length - 1;
+    while (i >= 0 && samples[i].t > endT) {
+      i -= 1;
+    }
+    while (i >= 0 && samples[i].t >= start) {
+      out.push(samples[i]);
+      i -= 1;
+    }
+    out.reverse();
+    return out;
+  }
+
+  function sampleRate() {
+    if (samples.length < 2) {
+      return 0;
+    }
+    var end = samples[samples.length - 1].t;
+    var count = 0;
+    var i;
+    for (i = samples.length - 1; i >= 0; i -= 1) {
+      if (end - samples[i].t > 1) {
+        break;
+      }
+      count += 1;
+    }
+    var span = end - samples[Math.max(0, i + 1)].t;
+    if (span <= 0) {
+      return 0;
+    }
+    return count / Math.min(1, Math.max(span, 0.001));
+  }
+
+  function renderStats(view) {
+    var adcMin = null;
+    var adcMax = null;
+    var adcSum = 0;
+    var diffSum = 0;
+    var diffMax = 0;
+    var n = view.length;
+    var i;
+    for (i = 0; i < n; i += 1) {
+      var av = codeToVolt(view[i].adc);
+      var dv = codeToVolt(view[i].dac);
+      var ad = Math.abs(av - dv) * 1000;
+      if (adcMin === null || av < adcMin) { adcMin = av; }
+      if (adcMax === null || av > adcMax) { adcMax = av; }
+      adcSum += av;
+      diffSum += (av - dv) * 1000;
+      if (ad > diffMax) { diffMax = ad; }
+    }
+    var meanAdc = n ? adcSum / n : 0;
+    var meanDiff = n ? diffSum / n : 0;
+    statsEl.innerHTML =
+      "取樣率 <b>" + sampleRate().toFixed(1) + "</b> 行/秒" +
+      "　ADC 最小 <b>" + (adcMin === null ? "—" : adcMin.toFixed(3)) + "</b> V" +
+      "　最大 <b>" + (adcMax === null ? "—" : adcMax.toFixed(3)) + "</b> V" +
+      "　平均 <b>" + (n ? meanAdc.toFixed(3) : "—") + "</b> V" +
+      "　ADC−DAC 平均 <b>" + (n ? meanDiff.toFixed(1) : "—") + "</b> mV" +
+      "　最大絕對差 <b>" + (n ? diffMax.toFixed(1) : "—") + "</b> mV" +
+      "　掉行/格式錯誤 <b>" + dropped + "</b> / <b>" + malformed + "</b>";
+  }
+
+  function resize() {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.max(320, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(220, Math.floor(rect.height * dpr));
+  }
+
+  function draw() {
+    resize();
+    var w = canvas.width;
+    var h = canvas.height;
+    var dpr = window.devicePixelRatio || 1;
+    var left = 58 * dpr;
+    var right = 16 * dpr;
+    var top = 16 * dpr;
+    var bottom = 32 * dpr;
+    var plotW = w - left - right;
+    var plotH = h - top - bottom;
+    var span = Number(windowSel.value);
+    var endT;
+    if (paused && frozenEnd !== null) {
+      endT = frozenEnd;
+    } else if (samples.length) {
+      endT = samples[samples.length - 1].t;
+    } else {
+      endT = span;
+    }
+    var startT = endT - span;
+    var view = windowed(endT, span);
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#0c1016";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "#2a3548";
+    ctx.fillStyle = "#93a0b5";
+    ctx.lineWidth = 1 * dpr;
+    ctx.font = (12 * dpr) + "px Segoe UI, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+
+    var g;
+    for (g = 0; g <= 4; g += 1) {
+      var volt = (FS_V * g) / 4;
+      var y = top + plotH - (volt / FS_V) * plotH;
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(left + plotW, y);
+      ctx.stroke();
+      ctx.fillText(volt.toFixed(2) + " V", left - 8 * dpr, y);
+    }
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    for (g = 0; g <= 4; g += 1) {
+      var frac = g / 4;
+      var x = left + frac * plotW;
+      var sec = startT + frac * span;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, top + plotH);
+      ctx.stroke();
+      ctx.fillText(sec.toFixed(2) + " s", x, top + plotH + 6 * dpr);
+    }
+
+    function trace(key, color) {
+      if (!view.length) {
+        return;
+      }
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.6 * dpr;
+      var i;
+      for (i = 0; i < view.length; i += 1) {
+        var px = left + ((view[i].t - startT) / span) * plotW;
+        var py = top + plotH - (codeToVolt(view[i][key]) / FS_V) * plotH;
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+    }
+
+    trace("dac", "#4c9dff");
+    trace("adc", "#ffb020");
+    renderStats(view);
+    requestAnimationFrame(draw);
+  }
+
+  async function readLoop() {
+    var pending = "";
+    try {
+      while (!stopRequested) {
+        var result = await reader.read();
+        if (result.done) {
+          break;
+        }
+        pending += result.value;
+        var nl = pending.indexOf("\n");
+        while (nl >= 0) {
+          var line = pending.slice(0, nl).replace(/\r$/, "").trim();
+          pending = pending.slice(nl + 1);
+          if (line.length) {
+            handleLine(line);
+          }
+          nl = pending.indexOf("\n");
+        }
+      }
+    } catch (err) {
+      if (!stopRequested) {
+        setState("讀取中斷", "bad");
+      }
+    }
+  }
+
+  connectBtn.addEventListener("click", async function () {
+    if (!serialOk) {
+      return;
+    }
+    try {
+      port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 115200 });
+      if (port.setSignals) {
+        await port.setSignals({ dataTerminalReady: false, requestToSend: false });
+      }
+      var decoder = new TextDecoderStream();
+      readerClosed = port.readable.pipeTo(decoder.writable);
+      reader = decoder.readable.getReader();
+      stopRequested = false;
+      paused = false;
+      frozenEnd = null;
+      samples = [];
+      malformed = 0;
+      dropped = 0;
+      t0 = null;
+      connectBtn.disabled = true;
+      disconnectBtn.disabled = false;
+      pauseBtn.disabled = false;
+      pauseBtn.textContent = "暫停";
+      exportBtn.disabled = false;
+      setState("已連線 115200", "ok");
+      readLoop();
+    } catch (err) {
+      if (err && err.name === "NotFoundError") {
+        return;
+      }
+      setState("連接失敗", "bad");
+    }
+  });
+
+  disconnectBtn.addEventListener("click", async function () {
+    stopRequested = true;
+    try {
+      if (reader) {
+        await reader.cancel();
+      }
+    } catch (err) {
+      // The stream may already be closed.
+    }
+    try {
+      if (readerClosed) {
+        await readerClosed;
+      }
+    } catch (err) {
+      // pipeTo rejects after cancel; that is expected.
+    }
+    try {
+      if (port) {
+        await port.close();
+      }
+    } catch (err) {
+      // Port may already be closed.
+    }
+    reader = null;
+    readerClosed = null;
+    port = null;
+    connectBtn.disabled = !serialOk;
+    disconnectBtn.disabled = true;
+    pauseBtn.disabled = true;
+    setState("未連線", "");
+  });
+
+  pauseBtn.addEventListener("click", function () {
+    paused = !paused;
+    if (paused) {
+      frozenEnd = samples.length ? samples[samples.length - 1].t : 0;
+      pauseBtn.textContent = "繼續";
+      setState("暫停（仍在收資料）", "ok");
+    } else {
+      frozenEnd = null;
+      pauseBtn.textContent = "暫停";
+      setState("已連線 115200", "ok");
+    }
+  });
+
+  exportBtn.addEventListener("click", function () {
+    var lines = ["t_s,dac,adc,dac_V,adc_V"];
+    var i;
+    for (i = 0; i < samples.length; i += 1) {
+      var s = samples[i];
+      lines.push(
+        s.t.toFixed(6) + "," + s.dac + "," + s.adc + "," +
+        codeToVolt(s.dac).toFixed(6) + "," + codeToVolt(s.adc).toFixed(6)
+      );
+    }
+    var blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "serial_plotter.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  requestAnimationFrame(draw);
+}());
+</script>
+</body>
+</html>
