@@ -22,6 +22,7 @@
 | [device-f280049c.md](device-f280049c.md) | 記憶體位址、周邊數量、時脈、TRM 章節 |
 | [references.md](references.md) | 官網文件、本機 C2000Ware 路徑、DCL、勘誤、有沒有現成 skill |
 | [board-pins.md](board-pins.md) | LaunchPad 電路網路、LED、開機、UART、CAN |
+| [rigol-scope.md](rigol-scope.md) | 要用 LAN 控制 RIGOL 示波器、截出置中放大且有量測線的波形圖 |
 | [boundaries.md](boundaries.md) | 想拆 CCS 執行檔或 DLL 之前 |
 | [cloud-read-log.md](cloud-read-log.md) | 要讀雲端課程資料夾之前 |
 
