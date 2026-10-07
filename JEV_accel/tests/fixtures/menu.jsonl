@@ -1,0 +1,4 @@
+{"id": "M01", "source": "0c04e65d wiki rule: open menu, blue border hit on most rows", "accept": [true], "stats": {"hit_rows": 318, "band_rows": 340, "hit_frac": 0.935, "mean_blue": 141.2, "image_size": [1024, 600]}}
+{"id": "M02", "source": "0c04e65d wiki rule: menu closed, no blue border", "accept": [false], "stats": {"hit_rows": 0, "band_rows": 340, "hit_frac": 0.0, "mean_blue": 6.3, "image_size": [1024, 600]}}
+{"id": "M03", "source": "ambiguous: partly covered border, above the wiki 40-row threshold", "accept": [true], "stats": {"hit_rows": 52, "band_rows": 340, "hit_frac": 0.153, "mean_blue": 38.0, "image_size": [1024, 600]}}
+{"id": "M04", "source": "ambiguous: blue CH2-like trace crossing the band, below the wiki threshold", "accept": [false], "stats": {"hit_rows": 22, "band_rows": 340, "hit_frac": 0.065, "mean_blue": 15.4, "image_size": [1024, 600]}}

@@ -1,0 +1,8 @@
+'Building file: "../main.c"'
+'Invoking: C2000 Compiler'
+main.c:3:10: fatal error: DSP28x_Project.h: No such file or directory
+    3 | #include "DSP28x_Project.h"
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake: *** [subdir_rules.mk:16: main.obj] Error 1
+exit_code: 2

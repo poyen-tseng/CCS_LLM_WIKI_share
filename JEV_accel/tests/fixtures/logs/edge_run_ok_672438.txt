@@ -1,0 +1,37 @@
+---
+pid: 22624
+cwd: "D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\Debug"
+command: "python -c \"\nimport sys; sys.path.insert(0, r'D:\\code\\_TI_CCS_no_chinese\\CCS_LLM_WIKI_share\\MCP\\rigol-mso\\tools')\nimport scope_lan as L\ns = L.connect(); L.write(s, ':SOUR1:OUTP OFF'); print('GI', L.query(s, ':SOUR1:OUTP?'))\n\"; Remove-Item (Join-Path $env:TEMP 'gpio_edge_go.txt') -ErrorAction SilentlyContinue\ncmd /c \"C:\\ti\\ccs2101\\ccs\\scripting\\run.bat D:\\code\\_TI_CCS_no_chinese\\CCS_LLM_WIKI_share\\MCP\\rigol-mso\\tools\\edge_run.js --ccxml D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\targetConfigs\\TMS320F280049C.ccxml --program D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\Debug\\GPIO_EX2.out --hold-ms 3000 --wait-ms 120000\""
+title: "GI off, then load QSEL=2 program"
+status: succeeded
+started_at: 2026-10-07T11:13:00.428Z
+running_for_ms: 35560    
+---
+GI 0
+connecting
+GEL: C28xx_CPU1: GEL Output: 
+Memory Map Initialization Complete
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+reset-then-load
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+PC 0x87c2
+READY
+running
+RAN
+
+---
+exit_code: 0
+elapsed_ms: 35559
+ended_at: 2026-10-07T11:13:35.987Z
+---

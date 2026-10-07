@@ -1,0 +1,28 @@
+---
+pid: 10564
+cwd: "D:\\code\\_TI_CCS_no_chinese\\GPIO_EX1\\Debug"
+command: "& \"C:\\ti\\ccs2101\\ccs\\utils\\bin\\gmake.exe\" -j all"
+title: "Build GPIO_EX1 Debug configuration"
+status: succeeded
+started_at: 2026-10-06T05:29:12.169Z
+running_for_ms: 39803    
+---
+'C2000 Compiler - building file: "../Init.c"'
+'C2000 Compiler - building file: "../f28004x_defaultisr.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/GPIO_EX1" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="Init.d_raw"  "../Init.c"
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/GPIO_EX1" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_defaultisr.d_raw"  "../f28004x_defaultisr.c"
+'Finished building: "../f28004x_defaultisr.c"'
+' '
+'Finished building: "../Init.c"'
+' '
+'C2000 Linker - building target: "GPIO_EX1.out"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --advice:performance=all -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"GPIO_EX1.map" --stack_size=0x200 --warn_sections -i"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/lib" -i"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="GPIO_EX1_linkInfo.xml" --rom_model -o "GPIO_EX1.out" "./Comm.obj" "./Init.obj" "./f28004x_adc.obj" "./f28004x_codestartbranch.obj" "./f28004x_cputimers.obj" "./f28004x_defaultisr.obj" "./f28004x_globalvariabledefs.obj" "./f28004x_gpio.obj" "./f28004x_piectrl.obj" "./f28004x_pievect.obj" "./f28004x_sysctrl.obj" "./f28004x_usdelay.obj" "./main.obj" "../280049C_RAM_lnk.cmd" "../f28004x_headers_nonbios.cmd"  -llibc.a 
+<Linking>
+'Finished building target: "GPIO_EX1.out"'
+' '
+
+---
+exit_code: 0
+elapsed_ms: 39797
+ended_at: 2026-10-06T05:29:51.966Z
+---

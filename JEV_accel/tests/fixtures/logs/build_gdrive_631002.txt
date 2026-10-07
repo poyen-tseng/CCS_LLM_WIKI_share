@@ -1,0 +1,25 @@
+---
+pid: 19916
+cwd: "C:\\ti\\ccs2101\\ccs\\theia"
+command: "chcp 65001 | Out-Null\ncmd /c \"C:\\ti\\ccs2101\\ccs\\eclipse\\ccs-server-cli.bat -noSplash -workspace C:/Users/user/workspace_ccs_gpio_ex1 -application com.ti.ccs.apps.buildProject -ccs.projects GPIO_EX1 -ccs.configuration Debug\"\nWrite-Host \"build exit: $LASTEXITCODE\""
+title: "Rebuild GPIO_EX1 after advice option fix"
+status: failed   
+started_at: 2026-09-19T09:45:36.197Z
+running_for_ms: 517408   
+---
+
+# ================================================================================
+# [Sat Sep 19 17:45:42 CST 2026]: CCS headless build starting... 
+
+
+**** Build of configuration 'Debug' for project 'GPIO_EX1' ****
+
+"C:\\ti\\ccs2101\\ccs\\utils\\bin\\gmake" -k -j 8 all -r -O 
+ 
+build exit: -1
+
+---
+exit_code: 4294967295
+elapsed_ms: 517408
+ended_at: 2026-09-19T09:54:13.605Z
+---

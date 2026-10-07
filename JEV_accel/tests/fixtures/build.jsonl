@@ -1,0 +1,13 @@
+{"id": "F01", "source": "fault injection 2026-10-07: LED_test copy, `int x = ;` in main.c (cl2000 #29)", "log": "build_syntax.txt", "accept": ["syntax_error"]}
+{"id": "F02", "source": "fault injection: #include \"no_such_header.h\" (fatal #1965)", "log": "build_include.txt", "accept": ["include_path"]}
+{"id": "F03", "source": "fault injection: call to an undefined MissingFunc (#10234-D)", "log": "build_undef.txt", "accept": ["undefined_symbol"]}
+{"id": "F04", "source": "fault injection: 40000-word array in ramgs0 (#10099-D on a .cmd line)", "log": "build_placement.txt", "accept": ["memory_placement"]}
+{"id": "F05", "source": "fault injection: CG_TOOL_ROOT -> 22.6.0.LTS, not installed (a874d153: project asked for 22.6)", "log": "build_compiler.txt", "accept": ["missing_compiler"]}
+{"id": "F06", "source": "fault injection: second gmake after edit with preserved mtime (c8f002db L655)", "log": "build_uptodate.txt", "changed": ["main.c"], "accept": ["stale_build"]}
+{"id": "F07", "source": "real: gmake up to date and nothing changed", "log": "build_uptodate.txt", "changed": [], "accept": ["ok"]}
+{"id": "F08", "source": "real: gmake clean prints Big5 'Could Not Find' for missing .d (88daf93e rewrote the makefile for this)", "log": "build_clean.txt", "accept": ["ok"]}
+{"id": "F09", "source": "fault injection: --advice:performance=all twice (a874d153 blamed it; gmake accepts it)", "log": "build_dupopt.txt", "accept": ["ok"]}
+{"id": "F10", "source": "real terminals/253246.txt: GPIO_EX1 gmake -j all", "log": "build_gpio_ok_253246.txt", "accept": ["ok"]}
+{"id": "F11", "source": "real terminals/631002.txt: ccs-server-cli build on Google Drive hung 517 s", "log": "build_gdrive_631002.txt", "project_dir": "G:/我的雲端硬碟/course/GPIO_EX1", "elapsed_s": 517, "accept": ["slow_path"]}
+{"id": "F12", "source": "synthetic: GNU-style missing header text the cl2000 regex does not know", "log": "build_syn_gnu_include.txt", "accept": ["include_path"], "needs_jev": true}
+{"id": "F13", "source": "synthetic: compiler license error", "log": "build_syn_license.txt", "accept": ["other_error"]}

@@ -1,0 +1,36 @@
+---
+pid: 23548
+cwd: "D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\Debug"
+command: "$sig = Join-Path $env:TEMP 'gpio_edge_go.txt'; Remove-Item $sig -ErrorAction SilentlyContinue\ncmd /c \"C:\\ti\\ccs2101\\ccs\\scripting\\run.bat D:\\code\\_TI_CCS_no_chinese\\CCS_LLM_WIKI_share\\MCP\\rigol-mso\\tools\\edge_run.js --ccxml D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\targetConfigs\\TMS320F280049C.ccxml --program D:\\code\\_TI_CCS_no_chinese\\Oscilloscope_read\\GPIO_EX2\\Debug\\GPIO_EX2.out --hold-ms 3000 --wait-ms 120000\""
+title: "Load GPIO_EX2 via CCS script (background)"
+status: succeeded
+started_at: 2026-10-07T11:01:49.700Z
+running_for_ms: 34292    
+---
+connecting
+GEL: C28xx_CPU1: GEL Output: 
+Memory Map Initialization Complete
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+reset-then-load
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+GEL: C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+PC 0x87c0
+READY
+running
+RAN
+
+---
+exit_code: 0
+elapsed_ms: 34291
+ended_at: 2026-10-07T11:02:23.991Z
+---

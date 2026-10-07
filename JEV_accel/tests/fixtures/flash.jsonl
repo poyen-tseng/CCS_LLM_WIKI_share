@@ -1,0 +1,10 @@
+{"id": "C01", "source": "terminals/672437.txt: QSEL=0 load, PC 0x87c0, READY/RAN", "log": "edge_run_ok_672437.txt", "accept": ["ok_running"]}
+{"id": "C02", "source": "terminals/672438.txt: QSEL=2 load, PC 0x87c2", "log": "edge_run_ok_672438.txt", "accept": ["ok_running"]}
+{"id": "C03", "source": "terminals/844858.txt: Ex1 load after settings, PC 0x87bb", "log": "edge_run_ok_844858.txt", "accept": ["ok_running"]}
+{"id": "C04", "source": "c8f002db L322 + edge_run.js guard: PC left in boot ROM", "log": "bootrom.txt", "accept": ["at_bootrom"]}
+{"id": "C05", "source": "edge_run.js wait-ms expired before the scope was armed", "log": "arm_timeout.txt", "accept": ["retry"]}
+{"id": "C06", "source": "c8f002db L70-78: ccs-debug debugProject timed out twice", "log": "ccs_debug_timeout_x2.txt", "accept": ["fallback_dss"]}
+{"id": "C07", "source": "edge_run.js still waiting for the go-file", "log": "waiting_go.txt", "accept": ["waiting_go"]}
+{"id": "C08", "source": "c8f002db L655: up to date + 240 ns measured where QSEL=2 needs ~33 us", "log": "stale_build.txt", "expected_range": [2e-5, 5e-5], "measured": 2.4e-7, "accept": ["rebuild_needed"]}
+{"id": "C09", "source": "32ca5dc5: QSEL=2 load and 33.1 us measured, matches the source", "log": "edge_run_ok_672438.txt", "expected_range": [2e-5, 5e-5], "measured": 3.31e-5, "accept": ["ok_running"]}
+{"id": "C10", "source": "c8f002db L655 (free-text check for Jev): QSEL=2 configured, 240 ns measured", "log": "edge_run_ok_672438.txt", "measured": 2.4e-7, "expectation": "Init.c sets GPIO0 QSEL=2 (6-sample qualification) with CTRL=255, so GPIO6 should follow about 33 us after the GPIO0 edge", "accept": ["rebuild_needed"], "needs_jev": true}

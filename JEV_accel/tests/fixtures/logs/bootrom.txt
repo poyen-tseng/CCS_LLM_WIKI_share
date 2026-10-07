@@ -1,0 +1,6 @@
+connecting
+reset-then-load
+PC 0x3fb02a
+Error: PC is not in the application
+---
+exit_code: 1

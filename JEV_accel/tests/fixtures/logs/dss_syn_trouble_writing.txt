@@ -1,0 +1,4 @@
+C28xx_CPU1: GEL Output: Memory Map Initialization Complete
+C28xx_CPU1: Trouble Writing Memory Block at 0x80000 on Page 0 of Length 0x2: (Error -1065 @ 0x80000) Unable to write memory. Verify that the memory address is in valid memory.
+C28xx_CPU1: File Loader: Memory write failed: Unknown error
+exit_code: 1

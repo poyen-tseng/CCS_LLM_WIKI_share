@@ -1,0 +1,8 @@
+DEL /F "LED_test.out" 
+DEL /F "f28004x_codestartbranch.obj" "f28004x_globalvariabledefs.obj" "f28004x_sysctrl.obj" "f28004x_usdelay.obj" "main.obj" 
+DEL /F "f28004x_globalvariabledefs.d" "f28004x_sysctrl.d" "main.d" 
+找不到 <scratch>\inj\uptodate\Debug\f28004x_globalvariabledefs.d
+DEL /F "f28004x_codestartbranch.d" "f28004x_usdelay.d" 
+找不到 <scratch>\inj\uptodate\Debug\f28004x_codestartbranch.d
+' '
+exit_code: 0

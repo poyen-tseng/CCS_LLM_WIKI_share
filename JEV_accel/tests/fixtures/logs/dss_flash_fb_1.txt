@@ -1,0 +1,20 @@
+C28xx_CPU1: GEL Output: 
+Memory Map Initialization Complete
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+C28xx_CPU1: Program verification successful for D:/code/_TI_CCS_no_chinese/Feedback_test/Debug/Feedback_test.out
+
+VERIFY_OK
+FLASH_OK
+exit_code: 0

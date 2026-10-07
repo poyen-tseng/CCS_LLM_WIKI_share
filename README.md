@@ -31,3 +31,7 @@
 ## MCP
 
 [MCP](MCP) 只放本機 MCP 伺服器，一台伺服器一個子夾。目前有 [rigol-mso](MCP/rigol-mso)，用區域網路控制 RIGOL MSO5000。
+
+## JEV_accel
+
+[JEV_accel](JEV_accel) 是示波器與 CCS 的規則優先工具：先用確定性規則判斷，判斷不了再問 Jev。示波器的用法在 [JEV_accel/README.md](JEV_accel/README.md)，實測的加速幅度與 Jev 正確率在 [JEV_accel/JEV_PERFORMANCE.md](JEV_accel/JEV_PERFORMANCE.md)。

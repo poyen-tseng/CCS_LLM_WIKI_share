@@ -1,0 +1,3 @@
+ccs-debug debugProject(GPIO_EX1): Error: MCP request timed out after 60000 ms
+getDebugSessions: []
+ccs-debug debugProject(GPIO_EX1): Error: MCP request timed out after 60000 ms

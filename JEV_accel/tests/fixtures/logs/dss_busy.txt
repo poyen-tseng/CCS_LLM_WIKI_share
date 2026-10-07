@@ -1,0 +1,71 @@
+SEVERE: IcePick_C_0: Error initializing emulator: (Error -260 @ 0x0)
+An attempt to connect to the XDS110 failed.
+The cause may be one or more of: no XDS110 is connected, invalid
+firmware update, invalid XDS110 serial number, or faulty USB
+cable. The firmware and serial number may be updated using the
+xdsdfu utility found in the .../ccs_base/common/uscif/xds110
+directory of your installation. View the XDS110SupportReadMe.pdf
+file there for instructions.
+(Emulation package 21.0.0.4024)
+
+
+SEVERE: Could not start server: DebugServer.1: IcePick_C_0: Error initializing emulator: (Error -260 @ 0x0)
+An attempt to connect to the XDS110 failed.
+The cause may be one or more of: no XDS110 is connected, invalid
+firmware update, invalid XDS110 serial number, or faulty USB
+cable. The firmware and serial number may be updated using the
+xdsdfu utility found in the .../ccs_base/common/uscif/xds110
+directory of your installation. View the XDS110SupportReadMe.pdf
+file there for instructions.
+(Emulation package 21.0.0.4024)
+
+
+org.mozilla.javascript.WrappedException: Wrapped com.ti.ccstudio.scripting.environment.ScriptingException: Could not start server: DebugServer.1: IcePick_C_0: Error initializing emulator: (Error -260 @ 0x0)
+An attempt to connect to the XDS110 failed.
+The cause may be one or more of: no XDS110 is connected, invalid
+firmware update, invalid XDS110 serial number, or faulty USB
+cable. The firmware and serial number may be updated using the
+xdsdfu utility found in the .../ccs_base/common/uscif/xds110
+directory of your installation. View the XDS110SupportReadMe.pdf
+file there for instructions.
+(Emulation package 21.0.0.4024)
+
+ (C:\Users\user\AppData\Local\Temp\f280049c_connect_check.js#8)
+	at org.mozilla.javascript.Context.throwAsScriptRuntimeEx(Context.java:1705)
+	at org.mozilla.javascript.MemberBox.invoke(MemberBox.java:157)
+	at org.mozilla.javascript.NativeJavaMethod.call(NativeJavaMethod.java:201)
+	at org.mozilla.javascript.optimizer.OptRuntime.call1(OptRuntime.java:64)
+	at org.mozilla.javascript.gen.c1._c0(C:\Users\user\AppData\Local\Temp\f280049c_connect_check.js:8)
+	at org.mozilla.javascript.gen.c1.call(C:\Users\user\AppData\Local\Temp\f280049c_connect_check.js)
+	at org.mozilla.javascript.ContextFactory.doTopCall(ContextFactory.java:337)
+	at org.mozilla.javascript.ScriptRuntime.doTopCall(ScriptRuntime.java:2755)
+	at org.mozilla.javascript.gen.c1.call(C:\Users\user\AppData\Local\Temp\f280049c_connect_check.js)
+	at org.mozilla.javascript.gen.c1.exec(C:\Users\user\AppData\Local\Temp\f280049c_connect_check.js)
+	at org.mozilla.javascript.tools.shell.Main.evaluateScript(Main.java:500)
+	at org.mozilla.javascript.tools.shell.Main.processFileSecure(Main.java:422)
+	at org.mozilla.javascript.tools.shell.Main.processFile(Main.java:388)
+	at org.mozilla.javascript.tools.shell.Main.processSource(Main.java:379)
+	at org.mozilla.javascript.tools.shell.Main.processFiles(Main.java:176)
+	at org.mozilla.javascript.tools.shell.Main$IProxy.run(Main.java:97)
+	at org.mozilla.javascript.Context.call(Context.java:540)
+	at org.mozilla.javascript.ContextFactory.call(ContextFactory.java:447)
+	at org.mozilla.javascript.tools.shell.Main.exec(Main.java:159)
+	at org.mozilla.javascript.tools.shell.Main.main(Main.java:137)
+Caused by: com.ti.ccstudio.scripting.environment.ScriptingException: Could not start server: DebugServer.1: IcePick_C_0: Error initializing emulator: (Error -260 @ 0x0)
+An attempt to connect to the XDS110 failed.
+The cause may be one or more of: no XDS110 is connected, invalid
+firmware update, invalid XDS110 serial number, or faulty USB
+cable. The firmware and serial number may be updated using the
+xdsdfu utility found in the .../ccs_base/common/uscif/xds110
+directory of your installation. View the XDS110SupportReadMe.pdf
+file there for instructions.
+(Emulation package 21.0.0.4024)
+
+
+	at com.ti.debug.engine.scripting.DebugServer$SessionFactory.<init>(DebugServer.java:158)
+	at com.ti.debug.engine.scripting.DebugServer.openSession(DebugServer.java:1062)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.mozilla.javascript.MemberBox.invoke(MemberBox.java:142)
+	... 18 more
+exit_code: 0

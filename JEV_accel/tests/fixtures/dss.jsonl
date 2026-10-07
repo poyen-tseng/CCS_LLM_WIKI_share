@@ -1,0 +1,9 @@
+{"id": "G01", "source": "real 2026-10-07: dss.bat flash_and_run.js Feedback_test", "log": "dss_flash_fb_1.txt", "probe_present": true, "accept": ["flash_ok"]}
+{"id": "G02", "source": "real terminals/150308.txt: Serial_Plotter flash", "log": "dss_flash_ok_150308.txt", "probe_present": true, "accept": ["flash_ok"]}
+{"id": "G03", "source": "real terminals/253247.txt: connect check (header echoes CONNECT_FAIL literal)", "log": "dss_connect_ok_253247.txt", "probe_present": true, "accept": ["connect_ok"]}
+{"id": "G04", "source": "real 2026-10-07: dss.bat while the daemon held the XDS110 -> Error -260 'no XDS110 is connected'", "log": "dss_busy.txt", "probe_present": true, "accept": ["probe_busy"]}
+{"id": "G05", "source": "same text with the XDS110 absent from PnP", "log": "dss_busy.txt", "probe_present": false, "accept": ["no_probe"]}
+{"id": "G06", "source": "real 2026-10-07: dss.bat right after ccs_release", "log": "dss_after_release.txt", "probe_present": true, "accept": ["connect_ok"]}
+{"id": "G07", "source": "synthetic (TI message format): Trouble Writing Memory Block at flash", "log": "dss_syn_trouble_writing.txt", "probe_present": true, "accept": ["flash_fail"]}
+{"id": "G08", "source": "synthetic (TI message format): Trouble Halting Target CPU, device not responding", "log": "dss_syn_trouble_halting.txt", "probe_present": true, "accept": ["run_fail", "target_power"]}
+{"id": "G09", "source": "synthetic: daemon ScriptingTimeoutError", "log": "dss_syn_daemon_timeout.txt", "probe_present": true, "accept": ["timeout"]}

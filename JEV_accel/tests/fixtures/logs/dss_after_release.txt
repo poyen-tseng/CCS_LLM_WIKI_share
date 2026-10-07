@@ -1,0 +1,9 @@
+C28xx_CPU1: GEL Output: 
+Memory Map Initialization Complete
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+CONNECT_OK
+exit_code: 0

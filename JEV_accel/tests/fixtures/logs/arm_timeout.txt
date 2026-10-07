@@ -1,0 +1,7 @@
+connecting
+reset-then-load
+PC 0x87c0
+READY
+Error: timed out waiting for scope arm
+---
+exit_code: 1

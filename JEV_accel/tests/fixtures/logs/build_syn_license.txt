@@ -1,0 +1,5 @@
+'Building file: "../main.c"'
+>> ERROR: The license for this compiler has expired or the license server cannot be reached.
+>> Contact your administrator.
+gmake: *** [subdir_rules.mk:16: main.obj] Error 1
+exit_code: 2

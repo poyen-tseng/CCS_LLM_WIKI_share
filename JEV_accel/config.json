@@ -1,0 +1,23 @@
+{
+  "rigol_mso_dir": "D:/code/_TI_CCS_no_chinese/CCS_LLM_WIKI_share/MCP/rigol-mso",
+  "scope": {"addr": "192.168.137.50", "port": 5555, "bind": "192.168.137.1", "timeout_s": 8},
+  "jev": {"model": "jev-1.13.0", "frame_ask": "notes_only", "menu_ask": false, "timeout_s": 5.0, "max_retries": 1,
+          "min_choice_confidence": 0.8, "noul_yes": 0.85, "noul_no": 0.15},
+  "frame": {"expected_probe": 10, "max_edge_div": 0.3, "max_center_div": 0.5,
+            "max_trigger_frac": 0.05, "flat_vpp_div": 0.5, "clip_margin_div": 0.05,
+            "small_vpp_div": 2.0, "borderline": 0.8, "settle_s": 1.5},
+  "menu": {"x0": 850, "x1": 862, "y0": 200, "y1": 540, "b_min": 70, "r_max": 60, "bg_min": 30,
+           "open_rows": 80, "closed_rows": 10, "wiki_rows": 40},
+  "diagnose": {"flat_vpp_v": 0.3, "level_readback_tol": 0.02},
+  "autoframe": {"coarse_tdiv": 0.0002, "coarse_settle_s": 1.0},
+  "ccs": {"root": "C:/ti/ccs2101/ccs", "c2000ware": "C:/ti/C2000Ware_5_00_00_00",
+          "compiler": "C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS",
+          "python": "C:/ti/ccs2101/ccs/ccs_base/DebugServer/ca-modules/tools/python3.14/python.exe",
+          "projects_root": "D:/code/_TI_CCS_no_chinese",
+          "daemon": {"port": 47011, "idle_s": 600, "timeout_ms": 180000, "start_wait_s": 10},
+          "build_timeout_s": 600,
+          "projects": {"GPIO_EX1": {"mode": "ram"}, "LED_test": {"mode": "flash"},
+                       "Feedback_test": {"mode": "flash", "verify": "tools/verify_com4.ps1"},
+                       "Serial_Plotter": {"mode": "flash", "verify": "tools/verify_stream.ps1"}},
+          "com_port": "COM4"}
+}

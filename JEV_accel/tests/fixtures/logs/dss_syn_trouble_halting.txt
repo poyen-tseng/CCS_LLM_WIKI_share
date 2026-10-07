@@ -1,0 +1,3 @@
+C28xx_CPU1: Trouble Halting Target CPU: (Error -1044 @ 0x80001) Device is not responding to the request. Device may be locked, or the debug probe connection may be unreliable. Unplug and replug the debug probe or reset the target.
+RUN_FAIL Error: Trouble Halting Target CPU
+exit_code: 1

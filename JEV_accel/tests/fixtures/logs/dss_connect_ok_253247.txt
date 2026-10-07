@@ -1,0 +1,23 @@
+---
+pid: 2004
+cwd: "D:\\code\\_TI_CCS_no_chinese\\GPIO_EX1"
+command: "@'\nimportPackage(Packages.com.ti.debug.engine.scripting);\nimportPackage(Packages.com.ti.ccstudio.scripting.environment);\nimportPackage(Packages.java.lang);\n\nvar script = ScriptingEnvironment.instance();\nvar debugServer = script.getServer(\"DebugServer.1\");\ndebugServer.setConfig(\"D:/code/_TI_CCS_no_chinese/GPIO_EX1/targetConfigs/TMS320F280049C.ccxml\");\nvar debugSession = debugServer.openSession(\"Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1\");\ntry {\n    debugSession.target.connect();\n    java.lang.System.out.println(\"CONNECT_OK\");\n} catch (e) {\n    java.lang.System.out.println(\"CONNECT_FAIL\");\n    java.lang.System.out.println(String(e));\n} finally {\n    try { debugSession.target.disconnect(); } catch (ignore) {}\n    try { debugSession.terminate(); } catch (ignore2) {}\n    debugServer.stop();\n}\n'@ | Set-Content -Encoding ASCII -Path \"$env:TEMP\\f280049c_connect_check.js\"; & \"C:\\ti\\ccs2101\\ccs\\ccs_base\\scripting\\bin\\dss.bat\" \"$env:TEMP\\f280049c_connect_check.js\""
+title: "Connect to F280049C CPU1 then release probe"
+status: succeeded
+started_at: 2026-10-06T05:35:18.747Z
+running_for_ms: 47402    
+---
+C28xx_CPU1: GEL Output: 
+Memory Map Initialization Complete
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Start ... 
+
+C28xx_CPU1: GEL Output: ... DCSM Initialization Done ...
+
+CONNECT_OK
+
+---
+exit_code: 0
+elapsed_ms: 47392
+ended_at: 2026-10-06T05:36:06.139Z
+---

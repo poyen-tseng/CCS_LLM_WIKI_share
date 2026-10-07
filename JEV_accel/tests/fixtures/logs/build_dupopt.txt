@@ -1,0 +1,26 @@
+'C2000 Compiler - building file: "../f28004x_codestartbranch.asm"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_codestartbranch.d_raw"  "../f28004x_codestartbranch.asm"
+'C2000 Compiler - building file: "../f28004x_globalvariabledefs.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_globalvariabledefs.d_raw"  "../f28004x_globalvariabledefs.c"
+'C2000 Compiler - building file: "../f28004x_sysctrl.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_sysctrl.d_raw"  "../f28004x_sysctrl.c"
+'Finished building: "../f28004x_codestartbranch.asm"'
+'C2000 Compiler - building file: "../f28004x_usdelay.asm"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_usdelay.d_raw"  "../f28004x_usdelay.asm"
+' '
+'C2000 Compiler - building file: "../main.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="main.d_raw"  "../main.c"
+'Finished building: "../f28004x_usdelay.asm"'
+' '
+'Finished building: "../main.c"'
+' '
+'Finished building: "../f28004x_sysctrl.c"'
+' '
+'Finished building: "../f28004x_globalvariabledefs.c"'
+' '
+'C2000 Linker - building target: "LED_test.out"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"LED_test.map" --stack_size=0x200 --warn_sections -i"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/lib" -i"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="LED_test_linkInfo.xml" --rom_model -o "LED_test.out" "./f28004x_codestartbranch.obj" "./f28004x_globalvariabledefs.obj" "./f28004x_sysctrl.obj" "./f28004x_usdelay.obj" "./main.obj" "../280049C_FLASH_lnk.cmd" "../f28004x_headers_nonbios.cmd"  -llibc.a 
+<Linking>
+'Finished building target: "LED_test.out"'
+' '
+exit_code: 0

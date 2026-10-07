@@ -1,0 +1,25 @@
+'C2000 Compiler - building file: "../f28004x_codestartbranch.asm"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_codestartbranch.d_raw"  "../f28004x_codestartbranch.asm"
+'C2000 Compiler - building file: "../f28004x_globalvariabledefs.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_globalvariabledefs.d_raw"  "../f28004x_globalvariabledefs.c"
+'C2000 Compiler - building file: "../f28004x_sysctrl.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_sysctrl.d_raw"  "../f28004x_sysctrl.c"
+'C2000 Compiler - building file: "../f28004x_usdelay.asm"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="f28004x_usdelay.d_raw"  "../f28004x_usdelay.asm"
+'C2000 Compiler - building file: "../main.c"'
+"C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu0 --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/common/include" --include_path="C:/ti/C2000Ware_5_00_00_00/device_support/f28004x/headers/include" --include_path="D:/code/_TI_CCS_no_chinese/LED_test" --include_path="C:/ti/ccs2101/ccs/tools/compiler/ti-cgt-c2000_25.11.1.LTS/include" --advice:performance=all --define=_FLASH -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi --preproc_with_compile --preproc_dependency="main.d_raw"  "../main.c"
+'Finished building: "../f28004x_usdelay.asm"'
+' '
+'Finished building: "../f28004x_codestartbranch.asm"'
+' '
+"../main.c", line 9: error #29: expected an expression
+1 error detected in the compilation of "../main.c".
+
+>> Compilation failure
+gmake: *** [subdir_rules.mk:16: main.obj] Error 1
+'Finished building: "../f28004x_sysctrl.c"'
+' '
+'Finished building: "../f28004x_globalvariabledefs.c"'
+' '
+gmake: Target 'all' not remade because of errors.
+exit_code: 2
