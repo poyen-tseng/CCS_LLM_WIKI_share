@@ -15,6 +15,7 @@
 
 | 頁 | 何時讀 |
 | --- | --- |
+| [jev.md](jev.md) | 操作示波器、建置、燒錄、halt、讀 PC 之前 |
 | [entry-points.md](entry-points.md) | 要找執行檔、CLI、腳本、編譯器路徑 |
 | [mcp.md](mcp.md) | 人在 Cursor 裡、CCS 已開著，要用 MCP 建置或除錯 |
 | [cli-and-scripting.md](cli-and-scripting.md) | 不開 GUI、或要寫重複的下載／燒錄腳本 |

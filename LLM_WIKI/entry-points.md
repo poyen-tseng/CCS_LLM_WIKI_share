@@ -17,6 +17,7 @@
 | SysConfig 命令列 | `C:\ti\ccs2101\ccs\utils\sysconfig_1.28.1\sysconfig_cli.bat`                              |
 | C28x 編譯器      | `C:\ti\ccs2101\ccs\tools\compiler\ti-cgt-c2000_25.11.1.LTS\bin\cl2000.exe`                |
 | C2000Ware     | `C:\ti\C2000Ware_5_00_00_00`                                                              |
+| JEV 加速      | `D:\code\_TI_CCS_no_chinese\JEV_accel` 的 `.venv` Python；MCP 名稱 `jev-scope`、`jev-ccs`。用法見 [jev.md](jev.md) |
 
 `ccs-server-cli.bat` 用 CCS 自帶的 Node 啟動 `com.ti.ccs.apps_*` 外掛裡的 `app-launcher.js`。除錯腳本的 `run.bat` 則呼叫 `ccs_base\cloudagent\node.exe` 與 `ccs\scripting\launcher.mjs`。
 

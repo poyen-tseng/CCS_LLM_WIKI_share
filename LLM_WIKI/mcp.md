@@ -4,6 +4,8 @@ CCS 21 要開著，這四個伺服器才有作用。它們是官方代理，不�
 
 回到 [README.md](README.md)。路徑見 [entry-points.md](entry-points.md)。
 
+燒錄、halt、讀 PC 先用 [jev.md](jev.md) 的 `jev-ccs`（`ccs_load`、`ccs_run_control`）。需要中斷點、呼叫堆疊或變數時，先 `ccs_release`，再使用下面的 `ccs-debug`。
+
 ## 先選哪一組
 
 | 要做的事 | 命名空間 |

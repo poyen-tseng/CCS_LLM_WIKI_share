@@ -1,6 +1,6 @@
 # 命令列、腳本、編譯器
 
-CCS 沒開，或要在腳本裡重複下載時用這頁。CCS 已經開著、人在 Cursor 裡，優先用 [mcp.md](mcp.md)。
+CCS 沒開，或要在腳本裡重複下載時用這頁。燒錄、halt、讀 PC 先用 [jev.md](jev.md) 的 `jev-ccs`。這裡的 `C:\ti\ccs2101\ccs\scripting\run.bat` 是 daemon 起不來、或 `ccs_release` 之後探針仍被佔住時的退路。CCS 已經開著、而且需要中斷點或變數時，先 `ccs_release`，再優先用 [mcp.md](mcp.md)。
 
 回到 [README.md](README.md)。執行檔路徑見 [entry-points.md](entry-points.md)。
 
