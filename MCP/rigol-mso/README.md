@@ -4,7 +4,7 @@
 
 工具包括讀識別碼、讀設定、調通道／時基／觸發、單次擷取、截圖、下載波形 CSV，以及一條會擋下重置與改網路指令的原始 SCPI。
 
-要截置中、有量測線的波形圖，先讀 [rigol-scope.md](../../v20260922-初建/rigol-scope.md)。配合的獨立腳本在 [tools](tools)。
+要截置中、有量測線的波形圖，先讀 [rigol-scope.md](../../LLM_WIKI/rigol-scope.md)。配合的獨立腳本在 [tools](tools)。
 
 ## 安裝
 
