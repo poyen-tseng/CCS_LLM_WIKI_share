@@ -101,12 +101,29 @@
 | 觸發 | 邊緣、上升、CHAN1、1.95 V、NORM、單次 |
 | 結果 | RiseTime 11.8 ns、Vtop 3.66 V、Vbase 0.17 V |
 
-## 內建信號產生器
+## 內建信號產生器（GI）
 
-- `:SOUR1:OUTP?` 有回應，這台有 GI（信號產生器）。
-- `:SOUR1:OUTP:IMP?` 回 `OMEG`（高阻抗）。
-- 這版韌體（00.01.03.03.00）下 `*OPT?` 會逾時。
-- 產生器的用法之後再補。
+2026-10-07 量 GPIO Example 2 時用過。
+
+- `:SOUR1:OUTP?` 有回應，這台有 GI。這版韌體（00.01.03.03.00）下 `*OPT?` 會逾時。
+- 高阻抗模式（`:SOUR1:OUTP:IMP OMEG`）下，|offset| + Vpp/2 上限是 2.5 V。設 3.3 Vpp、offset 1.65 V 時，offset 會被自動改成 0.85 V，不會報錯。所以 0–3.3 V 做不到，最多 0–2.5 V（`:SOUR1:VOLT 2.5`、`:SOUR1:VOLT:OFFS 1.25`）。2.5 V 仍高於 F28004x 的 VIH。
+- 開輸出前先關輸出、設好參數、回讀 `FUNC?`、`VOLT?`、`VOLT:OFFS?`、`OUTP:IMP?`，確認上下限都在 0 到 3.3 V 之間才 `:SOUR1:OUTP ON`。回讀和設定值不同就保持關閉。
+- 腳位還被程式當輸出時不要開 GI，例如板上還在跑 `GPIO_EX1`（GPIO0 輸出高）。先下載把該腳設成輸入的程式。
+- 三角波：`:SOUR1:FUNC RAMP`、`:SOUR1:FUNC:RAMP:SYMM 50`、`:SOUR1:FREQ 1`。
+- 脈衝：`:SOUR1:FUNC PULS`、`:SOUR1:FREQ`、`:SOUR1:PULS:DCYC <百分比>`。10 kHz、10% 就是 10 µs 寬的脈衝。
+- 沒有 BNC 轉鱷魚夾時，可以把 1X／10X 可切換的探棒切到 1X，當信號線用：BNC 接 GI，鉤針接腳位，接地夾接 GND。固定 10X 的探棒鉤針裡串了 9 MΩ，不能當信號源。
+
+## 雙通道與觸發
+
+- 第二個通道一樣要 `:CHAN2:PROB 10`。兩個通道都用 1 V/div、offset -1.65 V，0 V 會落在中線下 1.65 格，兩條線疊在同一組格線上，和講義的圖一樣。
+- 時基很慢（例如 100 ms/div）時，`:RUN` 幾秒後 `:STOP`，畫面可能停在掃描中途，只剩一個點，量測值也是舊的。看電位用 1 ms/div 左右。
+- 脈寬觸發：`:TRIG:MODE PULS`、`:TRIG:PULS:SOUR CHAN2`、`:TRIG:PULS:LEV 1.65`、`:TRIG:PULS:WHEN LESS`、`:TRIG:PULS:UWID <秒>`。`WHEN` 只吃 `GRE`、`LESS` 這類值，`PLES`、`:TRIG:PULS:POL` 都會 -100。先用一個一定會觸發的寬度做對照（例如脈寬 0.5 s 時設 UWID 1），確認設定有效，再用來找窄突波。
+- 用手碰觸製造彈跳時，觸發會被碰觸瞬間的彈跳搶先觸發。要拍「放開」時，請對方先碰穩，再上膛，再放開。
+- 凍結的擷取記憶體夠深時（例如 10 ms/div、20 Mpts），停住後改 `:TIM:MAIN:SCAL` 和 `:TIM:MAIN:OFFS`，就能放大同一筆資料的任何一段，不必重抓。
+
+## 側邊選單偵測
+
+量測指令（`:MEAS:ITEM`）常會把 Measure 選單打開，不能假設它是關的。截圖後檢查 BMP：選單左緣在 x ≈ 850–862 有一條藍色邊線（b > 120、r < 100、b 比 g 大 30 以上），沿 y 200–540 掃，超過 40 列命中就是選單開著，這時按一次 MOFF 再重截。用畫面右側亮點總數判斷不可靠，選單按鈕底色是黑的。
 
 ## 腳本
 
