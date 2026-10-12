@@ -14,7 +14,7 @@ from .config import load_config
 from .jev import Decision, JevGate
 from .rules import autoframe, diagnose as diag_rules, flash as flash_rules, menu as menu_rules
 from .rules.frame import FrameInput, FrameResult, evaluate as eval_frame
-from .scope_io import Scope, first_cross, open_scope
+from .scope_io import RIGOL, RigolDialect, Scope, dialect_of, first_cross, open_scope, prepare_read
 
 _gate: JevGate | None = None
 
@@ -62,34 +62,35 @@ def frame_state(fi: FrameInput, r: FrameResult, goal: str = "") -> dict:
             "derived": r.metrics, "limits": limits}
 
 
-def frame_fix_scpi(label: str, r: FrameResult, channel: str = "CHAN1") -> list[str]:
+def frame_fix_scpi(label: str, r: FrameResult, channel: str = "CHAN1", d: RigolDialect = RIGOL) -> list[str]:
+    """The SCPI for a frame fix in the scope's dialect (suggestion values use the RIGOL offset convention)."""
     s = r.suggestion
-    ch = f":{channel}"
     if label == "fix_probe":
-        return [f"{ch}:PROB {s.get('probe', 10)}"]
+        return [d.cmd_probe(channel, s.get("probe", 10))]
     if label == "hide_menu":
-        return [":SYST:KEY:PRES MOFF"]
+        return [d.hide_menu] if d.hide_menu else []  # Keysight: no SCPI closes a dialog
     if label in ("fix_offset", "change_vdiv") and r.metrics.get("clipped"):
         return []  # clipped levels are the screen edge: re-frame with autoframe instead (see check_frame)
     if label in ("fix_offset", "change_vdiv") and "vdiv" in s:
-        cmds = [f"{ch}:VERN {'ON' if s['vernier'] else 'OFF'}", f"{ch}:SCAL {s['vdiv']:g}"]
-        return (cmds if label == "change_vdiv" or r.metrics.get("clipped") else []) + [f"{ch}:OFFS {s['offset']:g}"]
+        cmds = [d.cmd_vernier(channel, s["vernier"]), d.cmd_vdiv(channel, s["vdiv"])]
+        return (cmds if label == "change_vdiv" or r.metrics.get("clipped") else []) + [d.cmd_offset(channel, s["offset"])]
     if label == "move_trigger" and "trigger_level" in s:
-        return [f":TRIG:EDGE:LEV {s['trigger_level']:g}"]
+        return [d.cmd_trig_level(s["trigger_level"])]
     if label == "shift_timebase" and "t_offset" in s:
-        return [f":TIM:MAIN:OFFS {s['t_offset']:.4g}"]
+        return [d.cmd_t_offset(s["t_offset"])]
     if label == "clear_meas":
-        return [":MEAS:CLE ALL"]
+        return [d.clear_meas]
     return []
 
 
 def read_frame(sc: Scope, channel: str = "CHAN1", notes: list[str] | None = None,
                check_menu: bool = True, view: str = "edge") -> FrameInput:
-    cfg = sc.cfg
+    cfg, d = sc.cfg, dialect_of(sc)
+    prepare_read(sc, peek=False)  # never disturb an armed single shot just to look at it
     t, v, raw = sc.waveform_raw(channel)
     vtop, vbase = sc.measure("VTOP", channel), sc.measure("VBASE", channel)
-    level = sc.qf(":TRIG:EDGE:LEV?")
-    slope = sc.q(":TRIG:EDGE:SLOP?").upper()
+    level = d.trig_level(sc)
+    slope = d.trig_slope(sc)
     t50 = None
     if vtop is not None and vbase is not None:
         t50 = first_cross(t, v, (vtop + vbase) / 2, rising=not slope.startswith("NEG"))
@@ -97,19 +98,19 @@ def read_frame(sc: Scope, channel: str = "CHAN1", notes: list[str] | None = None
     if check_menu:
         menu_rows = menu_rules.stats(menu_rules.bmp_to_array(sc.screenshot_bmp()), cfg)["hit_rows"]
     return FrameInput(
-        vdiv=sc.qf(f":{channel}:SCAL?"), offset=sc.qf(f":{channel}:OFFS?"), probe=sc.qf(f":{channel}:PROB?"),
-        tdiv=sc.qf(":TIM:MAIN:SCAL?"), t_offset=sc.qf(":TIM:MAIN:OFFS?"), trig_level=level,
-        trig_status=sc.q(":TRIG:STAT?"), vtop=vtop, vbase=vbase,
+        vdiv=d.vdiv(sc, channel), offset=d.offset(sc, channel), probe=d.probe(sc, channel),
+        tdiv=d.tdiv(sc), t_offset=d.t_offset(sc), trig_level=level,
+        trig_status=d.trig_status(sc), vtop=vtop, vbase=vbase,
         vmax=float(v.max()) if v.size else 0.0, vmin=float(v.min()) if v.size else 0.0,
         raw_min=int(raw.min()) if raw.size else None, raw_max=int(raw.max()) if raw.size else None,
         t50=t50, rise_s=sc.measure("RTIM", channel), menu_rows=menu_rows,
         menu_open_rows=cfg["menu"]["open_rows"], notes=list(notes or []),
-        trig_on_channel=sc.q(":TRIG:EDGE:SOUR?").upper() == channel.upper(), view=view,
+        trig_on_channel=d.trig_source(sc) == channel.upper(), view=view,
     )
 
 
 def decide_frame(fi: FrameInput, jev_mode: str = "auto", goal: str = "", cfg: dict | None = None,
-                 channel: str = "CHAN1") -> dict:
+                 channel: str = "CHAN1", dialect: RigolDialect = RIGOL) -> dict:
     cfg = cfg or load_config()
     r = eval_frame(fi, cfg)
     # replay 2026-10-07: on purely numeric frames Jev stayed at 0.2-0.7 confidence (no usable answer),
@@ -122,10 +123,12 @@ def decide_frame(fi: FrameInput, jev_mode: str = "auto", goal: str = "", cfg: di
         p = gate().confident_noul(d, "report_ready")
         if p is not None and source == "jev":
             ready = p and label == "ok"
-    out = {"ready": ready, "next_fix": label, "source": source, "scpi": frame_fix_scpi(label, r, channel),
+    out = {"ready": ready, "next_fix": label, "source": source, "scpi": frame_fix_scpi(label, r, channel, dialect),
            "l0": r.to_dict(), "jev": d.to_dict() if d else None}
     if label in ("fix_offset", "change_vdiv") and r.metrics.get("clipped"):
         out["hint"] = "trace is clipped, so VTOP/VBASE are unreliable: call jev_autoframe (or check_frame apply=true)"
+    if label == "hide_menu" and not dialect.hide_menu:
+        out["hint"] = "a dialog or menu covers the graticule and no SCPI closes it: ask the user to press [Back]"
     return out
 
 
@@ -136,7 +139,7 @@ def check_frame(channel: str = "CHAN1", jev_mode: str = "auto", goal: str = "", 
     with open_scope(cfg) as sc:
         sc.settle(cfg["frame"]["settle_s"] if settle_s is None else settle_s)
         fi = read_frame(sc, channel, notes, check_menu, view)
-        out = decide_frame(fi, jev_mode, goal, cfg, channel)
+        out = decide_frame(fi, jev_mode, goal, cfg, channel, dialect_of(sc))
         if apply and "hint" in out and view == "edge":
             af = autoframe_on(sc, cfg, channel, "edge", None, True)
             out["autoframe"] = af
@@ -172,10 +175,12 @@ def diagnose(channel: str = "CHAN1", want_single: bool = True, trig_level_set: f
              pc: str | int | None = None, build_stale: bool | None = None, jev_mode: str = "auto") -> dict:
     cfg = load_config()
     with open_scope(cfg) as sc:
+        d = dialect_of(sc)
+        prepare_read(sc, peek=True)  # live VMAX/VMIN even when nothing triggers
         di = diag_rules.DiagInput(
-            probe=sc.qf(f":{channel}:PROB?"), expected_probe=cfg["frame"]["expected_probe"],
-            trig_level_set=trig_level_set, trig_level_readback=sc.qf(":TRIG:EDGE:LEV?"),
-            trig_status=sc.q(":TRIG:STAT?"), sweep=sc.q(":TRIG:SWE?"), want_single=want_single,
+            probe=d.probe(sc, channel), expected_probe=cfg["frame"]["expected_probe"],
+            trig_level_set=trig_level_set, trig_level_readback=d.trig_level(sc),
+            trig_status=d.trig_status(sc), sweep=d.sweep(sc), want_single=want_single,
             vmax=sc.measure("VMAX", channel), vmin=sc.measure("VMIN", channel),
             pc=int(pc, 16) if isinstance(pc, str) else pc, build_stale=build_stale,
         )
@@ -227,9 +232,13 @@ def decide_menu(stats: dict, jev_mode: str = "auto", cfg: dict | None = None) ->
 def menu(hide: bool = False, jev_mode: str = "auto") -> dict:
     cfg = load_config()
     with open_scope(cfg) as sc:
+        d = dialect_of(sc)
         out = decide_menu(menu_rules.stats(menu_rules.bmp_to_array(sc.screenshot_bmp()), cfg), jev_mode, cfg)
-        if hide and out["visible"]:
-            sc.w(":SYST:KEY:PRES MOFF")  # toggles: only pressed when the menu is known to be open
+        out["hide_supported"] = bool(d.hide_menu)
+        if hide and out["visible"] and not d.hide_menu:
+            out["hint"] = "no SCPI closes this dialog or menu: ask the user to press [Back] on the scope"
+        elif hide and out["visible"]:
+            sc.w(d.hide_menu)  # RIGOL MOFF toggles: only pressed when the menu is known to be open
             sc.settle(0.8)
             after = decide_menu(menu_rules.stats(menu_rules.bmp_to_array(sc.screenshot_bmp()), cfg), "off", cfg)
             out["after_hide"] = {"visible": after["visible"], "hit_rows": after["stats"]["hit_rows"]}
@@ -248,10 +257,12 @@ def autoframe_on(sc: Scope, cfg: dict, channel: str = "CHAN1", mode: str = "edge
                  apply: bool = True) -> dict:
     """Probe ratio first (every level is in probe units), then a coarse pass when VTOP/VBASE are not
     measurable (seen 2026-10-07: 1x probe setting, 1 us/div on a 1 kHz signal), then the fine plan."""
+    d = dialect_of(sc)
+    prepare_read(sc, peek=True)
     out: dict = {"applied": apply, "coarse_pass": False, "pre_scpi": []}
     probe = cfg["frame"]["expected_probe"]
-    if apply and abs(sc.qf(f":{channel}:PROB?") - probe) > 1e-6:
-        out["pre_scpi"].append(f":{channel}:PROB {probe}")
+    if apply and abs(d.probe(sc, channel) - probe) > 1e-6:
+        out["pre_scpi"].append(d.cmd_probe(channel, probe))
         sc.w(out["pre_scpi"][-1])
         sc.settle(0.5)
     _, _, raw = sc.waveform_raw(channel)
@@ -263,9 +274,9 @@ def autoframe_on(sc: Scope, cfg: dict, channel: str = "CHAN1", mode: str = "edge
         # clipped extremes are the screen edge, not the signal: center on the 3.3 V logic midpoint instead
         usable = not clipped and vmax is not None and vmin is not None and vmax - vmin > 0.3
         mid = (vmax + vmin) / 2 if usable else 1.65
-        coarse_tdiv = autoframe.tdiv_for_delay(delay_s) if delay_s else cfg["autoframe"]["coarse_tdiv"]
-        cmds = [f":{channel}:VERN OFF", f":{channel}:SCAL 1", f":{channel}:OFFS {-mid:.3f}",
-                f":TRIG:EDGE:LEV {mid:.3f}", f":TIM:MAIN:SCAL {coarse_tdiv:g}", ":TIM:MAIN:OFFS 0"]
+        coarse_tdiv = autoframe.tdiv_for_delay(delay_s, d.min_tdiv) if delay_s else cfg["autoframe"]["coarse_tdiv"]
+        cmds = [d.cmd_vernier(channel, False), d.cmd_vdiv(channel, 1), d.cmd_offset(channel, -mid, ".3f"),
+                d.cmd_trig_level(mid, ".3f"), d.cmd_tdiv(coarse_tdiv), d.cmd_t_offset(0, "g")]
         for c in cmds:
             sc.w(c)
         out["pre_scpi"] += cmds
@@ -276,17 +287,16 @@ def autoframe_on(sc: Scope, cfg: dict, channel: str = "CHAN1", mode: str = "edge
     if m["VTOP"] is None or m["VBASE"] is None:
         out["error"] = "VTOP/VBASE still invalid after the coarse pass: no signal on the channel (run jev_diagnose_capture)"
         return out
-    plan = autoframe.plan(m["VTOP"], m["VBASE"], m["VMAX"], m["VMIN"], mode, m["RTIM"], delay_s)
-    cmds = [f":{channel}:VERN {'ON' if plan['vernier'] else 'OFF'}", f":{channel}:SCAL {plan['vdiv']:g}",
-            f":{channel}:OFFS {plan['offset']:g}", f":TRIG:EDGE:LEV {plan['trigger_level']:g}",
-            f":TIM:MAIN:SCAL {plan['tdiv']:g}", f":TIM:MAIN:OFFS {plan['t_offset']:.4g}"]
+    plan = autoframe.plan(m["VTOP"], m["VBASE"], m["VMAX"], m["VMIN"], mode, m["RTIM"], delay_s, d.min_tdiv)
+    cmds = [d.cmd_vernier(channel, plan["vernier"]), d.cmd_vdiv(channel, plan["vdiv"]),
+            d.cmd_offset(channel, plan["offset"]), d.cmd_trig_level(plan["trigger_level"]),
+            d.cmd_tdiv(plan["tdiv"]), d.cmd_t_offset(plan["t_offset"])]
     out.update(plan=plan, scpi=cmds, readback={})
     if apply:
         for c in cmds:
             sc.w(c)
         sc.settle(0.3)
-        out["readback"] = {q: sc.q(q) for q in (f":{channel}:PROB?", f":{channel}:SCAL?", f":{channel}:OFFS?",
-                                                ":TRIG:EDGE:LEV?", ":TIM:MAIN:SCAL?", ":TIM:MAIN:OFFS?")}
+        out["readback"] = {q: sc.q(q) for q in d.readback_queries(channel)}
     return out
 
 

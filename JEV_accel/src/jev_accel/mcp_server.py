@@ -13,18 +13,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # allow running th
 from mcp.server.mcpserver import MCPServer  # noqa: E402
 
 from jev_accel import tools  # noqa: E402
+from jev_accel.config import load_config  # noqa: E402
 
 JevMode = Literal["auto", "always", "off"]
+_SCOPE = {"rigol": "RIGOL MSO5104", "keysight": "Keysight DSO-X 4034A"}[load_config()["scope"]["model"]]
 
 server = MCPServer(
     "jev-scope",
     instructions=(
-        "Fast decision gates for the RIGOL MSO5104 + F280049C workflow. Before reading a scope screenshot, "
+        f"Fast decision gates for the {_SCOPE} + F280049C workflow. Before reading a scope screenshot, "
         "call jev_check_frame: only when ready=true take the screenshot (once). If it says next_fix, apply its "
         "scpi (or call again with apply=true). If a single shot is flat or never triggers, call "
         "jev_diagnose_capture before suspecting wiring. After gmake / edge_run.js, pass the output to "
         "jev_flash_state instead of re-reading the terminal. Never press MOFF blindly: use jev_menu_visible. "
-        "jev_autoframe centers and scales a channel from measured VTOP/VBASE."
+        "jev_autoframe centers and scales a channel from measured VTOP/VBASE. Offsets and SCPI in the results "
+        "are already in the configured scope's own syntax."
     ),
 )
 
@@ -64,7 +67,8 @@ def jev_flash_state(output_text: str | None = None, output_path: str | None = No
 
 @server.tool()
 def jev_menu_visible(hide: bool = False, jev_mode: JevMode = "auto") -> dict:
-    """D: is the scope side menu open? hide=true presses MOFF only when it is open (MOFF toggles)."""
+    """D: is a scope menu / dialog open? RIGOL: hide=true presses MOFF only when it is open (MOFF toggles).
+    Keysight: no SCPI closes a dialog, so hide returns hide_supported=false and a hint to ask for [Back]."""
     return tools.menu(hide, jev_mode)
 
 

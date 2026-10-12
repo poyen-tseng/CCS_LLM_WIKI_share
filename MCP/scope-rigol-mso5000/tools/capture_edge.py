@@ -1,4 +1,4 @@
-"""Capture one GPIO rising edge with Track cursors and save two screenshots.
+"""Capture one GPIO rising edge with Track cursors and save two white-background screenshots.
 
 Run edge_run.js first and wait for READY; this script arms the scope and then writes the go file.
 """
@@ -29,7 +29,7 @@ def parse_args():
     p.add_argument("--go-file", type=pathlib.Path, default=DEFAULT_GO,
                    help="file edge_run.js waits for (default %%TEMP%%\\gpio_edge_go.txt)")
     p.add_argument("--out-dir", type=pathlib.Path, default=DEFAULT_OUT_DIR,
-                   help="screenshot folder (default MCP/rigol-mso/captures)")
+                   help="screenshot folder (default MCP/scope-rigol-mso5000/captures)")
     p.add_argument("--prefix", default="GPIO0_rise", help="screenshot name prefix")
     p.add_argument("--reuse", action="store_true", help="skip configure/arm; reuse the frozen acquisition")
     p.add_argument("--config-only", action="store_true", help="configure the scope and exit")
@@ -105,7 +105,7 @@ def snap(s, out, menu_off=False):
     if menu_off:
         write(s, ":SYST:KEY:PRES MOFF")
     time.sleep(0.6)
-    png = bmp_to_png(read_block(s, ":DISP:DATA? ON,OFF,PNG"))
+    png = bmp_to_png(read_block(s, ":DISP:DATA? ON,ON,PNG"))
     drain(s)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(png)

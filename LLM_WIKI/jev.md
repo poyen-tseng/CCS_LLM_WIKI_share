@@ -2,7 +2,7 @@
 
 操作示波器、建置、燒錄、halt、讀 PC 時，先呼叫 JEV。一次呼叫回傳判斷和可以照做的下一步，不必先拍照、搜尋路徑或重讀整份 log。工具在 [JEV_accel](../JEV_accel/README.md)，實測數字在 [JEV_PERFORMANCE.md](../JEV_accel/JEV_PERFORMANCE.md)。
 
-回到 [README.md](README.md)。示波器畫面細節見 [rigol-scope.md](rigol-scope.md)。CCS IDE 的中斷點與變數見 [mcp.md](mcp.md)。daemon 不可用時的腳本見 [cli-and-scripting.md](cli-and-scripting.md)。
+回到 [README.md](README.md)。示波器畫面細節見 [keysight-scope.md](keysight-scope.md)（目前接的 Keysight DSO-X 4034A）或 [rigol-scope.md](rigol-scope.md)。CCS IDE 的中斷點與變數見 [mcp.md](mcp.md)。daemon 不可用時的腳本見 [cli-and-scripting.md](cli-and-scripting.md)。
 
 Cursor 與 Claude Code 的工具名稱是 `jev-scope`（示波器）和 `jev-ccs`（CCS）。規則先跑。Jev 只在規則沒有明確結論時才問。回傳的 `source`：
 
@@ -19,8 +19,16 @@ Cursor 與 Claude Code 的工具名稱是 `jev-scope`（示波器）和 `jev-ccs
    - 否則：照 `next_fix` 送出 `scpi`，或再呼叫一次並設 `apply=true`。不要靠讀 PNG 判斷置中或截斷。
 2. 單次觸發沒觸發，或波形是平線：呼叫 `jev_diagnose_capture`，帶上你設的觸發準位和燒錄輸出裡的 PC。只有 `root_cause=wiring` 才請使用者檢查接線。
 3. `edge_run.js`、gmake、ccs-debug 的輸出交給 `jev_flash_state`。有量測值時帶上預期範圍（例如 QSEL=2 的延遲約 2e-5～5e-5 s），用來抓沒有重編的舊 build。
-4. MOFF 是切換鍵。用 `jev_menu_visible(hide=true)`，它只在選單開著時才按。
+4. MOFF 是切換鍵。用 `jev_menu_visible(hide=true)`，它只在選單開著時才按。Keysight 沒有能關對話框的 SCPI：回 `hide_supported=false` 時請使用者按 [Back]。
 5. 新訊號或起點完全不對：`jev_autoframe`。看邊緣用 `mode="edge"`，看延遲用 `mode="delay"` 並給 `delay_s`。
+
+### 換示波器
+
+`JEV_accel/config.json` 的 `scope.model` 選 `keysight` 或 `rigol`（環境變數 `SCOPE_MODEL` 可以覆寫），位址、埠與選單門檻跟著切換。回傳的 `scpi` 已經是該型號的語法，例如 Keysight 的 offset 是螢幕中心電壓（`:CHAN1:OFFS 1.085`），RIGOL 是 `-1.085`。改完 config 要在 Claude Code 重新連上 `jev-scope`。
+
+Keysight 在 NORM sweep 等觸發時，量測與波形查詢會卡住整台示波器。`jev_check_frame` 這時不讀資料、直接回 `diagnose`；`jev_diagnose_capture` 與 `jev_autoframe` 會暫時切 AUTO 讀電平再切回來。細節見 [keysight-scope.md](keysight-scope.md)。
+
+### RIGOL MSO5104
 
 這台 MSO5104 上，`:DISP:DATA?` 的 invert 參數沒有作用，回傳的圖永遠是黑底。報告要白底就在截圖後把影像反相。畫面被截斷時，VTOP／VBASE 是螢幕邊緣，不要拿來自己算 offset；用 `apply=true` 或 `jev_autoframe`。對隱藏通道送量測會把該通道打開。只量已經顯示的通道。
 
@@ -41,7 +49,7 @@ Cursor 與 Claude Code 的工具名稱是 `jev-scope`（示波器）和 `jev-ccs
 
 1. 回傳已是 `l0` 或 `l0_fallback`：照 `next_fix` 或 `next_step` 做。燒錄、halt、讀 PC 本來就不呼叫 Jev。
 2. 要確定這次不打 API：MCP 設 `jev_mode=off`，CLI 加 `--jev off`。規則仍會跑。
-3. 這個工作階段的工具列表沒有 `jev-scope` 或 `jev-ccs`：在 `D:\code\_TI_CCS_no_chinese\JEV_accel` 用該目錄的 `.venv` 執行 `python -m jev_accel <子命令> --jev off`。
+3. 這個工作階段的工具列表沒有 `jev-scope` 或 `jev-ccs`：在 `D:\code\_TI_CCS_no_chinese\CCS_LLM_WIKI_share\JEV_accel` 用該目錄的 `.venv` 執行 `python -m jev_accel <子命令> --jev off`。
 4. daemon 起不來，或 `ccs_release` 之後探針仍被佔住：改走 [cli-and-scripting.md](cli-and-scripting.md) 的 `C:\ti\ccs2101\ccs\scripting\run.bat`。不要為了一次 halt 新寫一支 `dss.bat`。
 
 `l0_fallback` 若和實際畫面不符，再看圖，並把該案例補進 `JEV_accel/tests/fixtures/`。不要把 API key 寫進手冊或倉庫。

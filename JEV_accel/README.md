@@ -1,4 +1,4 @@
-# JEV_accel：用 L0 規則加 Jev 加速 TI F280049C＋RIGOL MSO5104 的操作
+# JEV_accel：用 L0 規則加 Jev 加速 TI F280049C＋示波器（Keysight DSO-X 4034A 或 RIGOL MSO5104）的操作
 
 這個專案把 `Oscilloscope_read\JEV_ACCELERATION.md` 列出的 A–E 橋段做成工具，並加上 CCS 的建置、燒錄與探針判斷。用法有三種：Python 套件、CLI、MCP server（`jev-scope`、`jev-ccs`）。
 
@@ -25,7 +25,7 @@
 | A 截圖驗收 | `check-frame [--view edge\|delay] [--apply]` | `jev_check_frame` | `ready`、`next_fix`（見下方）、`scpi`、`metrics` |
 | B 無觸發診斷 | `diagnose [--level-set V] [--pc 0x..]` | `jev_diagnose_capture` | `root_cause`（見下方）、`fix`、`fix_is_software` |
 | C 燒錄狀態 | `flash-state <log> [--expected LO HI --measured X] [--expectation 文字]` | `jev_flash_state` | `state`（見下方）、`next_step` |
-| D 側選單 | `menu [--hide]` | `jev_menu_visible` | `visible`；`--hide` 只有在選單開著時才按 MOFF |
+| D 側選單 | `menu [--hide]` | `jev_menu_visible` | `visible`；RIGOL：`--hide` 只有在選單開著時才按 MOFF。Keysight：偵測格線上的對話框，`hide_supported=false` |
 | E 自動取景 | `autoframe [--mode edge\|delay --delay s] [--dry-run]` | `jev_autoframe` | 設定 probe、V/div、offset、觸發準位、時基，並讀回確認（只用規則） |
 
 各工具的可能回傳值：
@@ -40,7 +40,7 @@
 - `off`：完全不問。
 
 ```powershell
-cd D:\code\_TI_CCS_no_chinese\JEV_accel
+cd D:\code\_TI_CCS_no_chinese\CCS_LLM_WIKI_share\JEV_accel
 .\.venv\Scripts\python.exe -m jev_accel check-frame
 .\.venv\Scripts\python.exe -m jev_accel flash-state path\to\terminal.txt --expected 2e-5 5e-5 --measured 2.4e-7
 .\.venv\Scripts\python.exe -m jev_accel ping-jev
@@ -57,13 +57,16 @@ setx TYPESAFE_API_KEY "<你的 key>"   # 設定後重開終端機、Cursor、Cla
 ```
 
 - **`config.json`** 裡可以調：
-  - `rigol_mso_dir`：重用 `CCS_LLM_WIKI_share\MCP\rigol-mso\tools\scope_lan.py`，它會 bind 192.168.137.1，避免走 Wi-Fi。
-  - 示波器位址。
+  - `scope.model`：`keysight`（目前）或 `rigol`。`scope.keysight`／`scope.rigol` 各有位址與埠，`menu.keysight`／`menu.rigol` 各有選單門檻；`config.py` 依型號展開，其他程式照舊讀 `cfg["scope"]["addr"]` 與 `cfg["menu"]`。環境變數 `SCOPE_MODEL` 可以覆寫。
+  - `rigol_mso_dir`：重用 `CCS_LLM_WIKI_share\MCP\scope-rigol-mso5000\tools\scope_lan.py`，它會 bind 192.168.137.1，避免走 Wi-Fi。
+  - `keysight_dsox_dir`：重用 `CCS_LLM_WIKI_share\MCP\scope-keysight-dsox4000\tools\ks_lan.py`（5025 port，同樣 bind 192.168.137.1）。
+  - 型號差異集中在 `scope_io.py` 的 `RigolDialect`／`KeysightDialect`：規則層一律用 RIGOL 的 offset 正負號與觸發狀態字彙，Dialect 負責轉成各型號的 SCPI。
   - Jev 的 `model`。預設 `jev-latest`；第一次跑完 replay 後，建議改成回傳的實際版本並固定下來。
   - 各項門檻。
 - **個人覆寫**放在 `config.local.json`，不進 git。環境變數 `SCOPE_ADDR`、`SCOPE_BIND` 的優先權最高。
 - **MCP 已註冊**在 Cursor 使用者設定與 Claude Code 的 user scope：`jev-scope`（示波器）、`jev-ccs`（CCS）。
-- **連線方式**：每個工具都用短連線（開啟、查詢、關閉），盡量不和長時間連線的 `scope` MCP 搶 5555 port。
+- **連線方式**：每個工具都用短連線（開啟、查詢、關閉），盡量不和長時間連線的 `scope`／`keysight` MCP 搶連接埠。
+- **工作副本**：2026-10-12 起 `jev-scope`、`jev-ccs` 從這個資料夾（`CCS_LLM_WIKI_share\JEV_accel`）的 `.venv` 執行，`results/` 的歷史也搬過來了。舊的 `D:\code\_TI_CCS_no_chinese\JEV_accel` 不再註冊，沒有刪。
 
 ## 測試
 
@@ -115,6 +118,24 @@ setx TYPESAFE_API_KEY "<你的 key>"   # 設定後重開終端機、Cursor、Cla
 ## 硬體驗證
 
 連不上示波器時，先照 [SCOPE_IP_SETUP.md](SCOPE_IP_SETUP.md) 檢查網路與 IP 設定。
+
+### 已執行（2026-10-12，示波器 Keysight DSO-X 4034A）
+
+沒有接 F280049C。CH1、CH2 的 10:1 探棒接前面板 Demo 1、Demo 2，訊號用 `:DEMO:FUNC CLK`（約 3.57 MHz、0–2.1 V、上升約 40 ns）。SCPI 差異與實測細節見 [keysight-scope.md](../LLM_WIKI/keysight-scope.md)。
+
+| 項目 | 結果 |
+|---|---|
+| `pytest -m "not jev"`（含 `hw`） | 59/59 通過 |
+| E `autoframe` | 0.4 V/div（vernier）、送出 `:CHAN1:OFFS 1.085`（Keysight 是中心電壓；規則內部仍是 −1.085）、觸發 1.085 V、20 ns/div，讀回一致；接著 `check-frame` 回 `ready=true` |
+| A 注入 offset 偏 1 div → `check-frame --apply` | `fix_offset`，送出 `:CHAN1:OFFS 1.053`，下一次 `ready=true` |
+| B 觸發準位 2.6 V（高於訊號）→ `check-frame`、`diagnose --level-set 2.6` | `check-frame` 回 `diagnose`，沒有讀資料；`diagnose` 暫切 AUTO 讀到 VPP 約 2.15 V，判定 `trig_level_out_of_range`，建議 `:TRIG:EDGE:LEV 1.06`，結束後 sweep 回到 NORM、錯誤佇列乾淨。連跑三次結果相同 |
+| D 開 LAN 對話框 → `menu --hide` → 關掉 → `menu` | 開：`visible=true`（176 列）、`hide_supported=false` 並提示按 [Back]；關：`visible=false`（0 列） |
+
+**這輪發現的事：**
+- **等觸發時讀資料會卡死整台示波器。** NORM sweep、準位高於訊號時，`:WAV:PRE?`、`:MEAS:VMAX?` 都不回應，之後連新連線的 `*IDN?` 也不回，直到有觸發。第一版 `check-frame` 因此逾時。修正：`KeysightScope.prepare_read()` 在 `WAIT` 時不讀（check-frame）或暫切 AUTO（diagnose、autoframe）；卡住時用 VXI-11 device clear＋`:TRIG:FORC` 解除（`keysight.py recover`）。
+- **只看 Wait Trig 位元會誤判。** 第二版用 `:OPER:COND?` bit5 判斷，改準位後 bit5 短暫清掉，被當成 `TD`，於是沒有切 AUTO 就去量 → 又卡住。現在 NORM 下只認 0.25 秒內的 `:TER?` 觸發鎖存。
+- **對話框在黑底圖上是透明的**，所以選單偵測改數格線區的白字列（`menu.keysight.kind = dialog_text`），不是 RIGOL 的藍框。
+- 觸發準位超出範圍時 Keysight 回 `-222` 拒絕，不像 RIGOL 默默夾限；`diagnose` 的 `level_clamped` 在這台通常是 false，判斷改靠 VMAX/VMIN 是否包住準位。
 
 ### 已執行（2026-10-07，示波器 MSO5104）
 

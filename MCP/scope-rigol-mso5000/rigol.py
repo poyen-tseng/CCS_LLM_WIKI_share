@@ -247,8 +247,11 @@ class MSO5000:
         return val
 
     def screenshot(self) -> bytes:
-        """Return a PNG of the current screen."""
-        data = self.inst.query_binary_values(":DISP:DATA? ON,OFF,PNG", datatype="B", container=bytes)
+        """Return a PNG of the current screen on a white background.
+
+        :DISP:DATA? arguments are color, invert, format. Invert ON is white.
+        """
+        data = self.inst.query_binary_values(":DISP:DATA? ON,ON,PNG", datatype="B", container=bytes)
         return bmp_to_png(data)
 
     def waveform(self, source: str | int = "CHAN1", mode: str = "NORM", max_points: int | None = None) -> Waveform:

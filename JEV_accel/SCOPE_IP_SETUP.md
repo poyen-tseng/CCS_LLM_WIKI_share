@@ -1,4 +1,6 @@
-# 示波器 IP 設定：讓 RIGOL MSO5104 回到 192.168.137.50
+# 示波器 IP 設定：RIGOL MSO5104 在 192.168.137.50，Keysight DSO-X 4034A 在 192.168.137.60
+
+目前接的是 Keysight，見最後的「Keysight DSO-X 4034A」一節。下面第 1–7 節是 RIGOL 的設定與紀錄。
 
 這份說明讓電腦能透過有線網路控制示波器，`scope` 和 `jev-scope` 兩個 MCP，以及 `pytest -m hw`，都靠這個連線。
 
@@ -76,7 +78,7 @@
 | 2 ping | `ping -S 192.168.137.1 192.168.137.50` | 有回覆，時間 < 1 ms |
 | 3 ARP | `Get-NetNeighbor -IPAddress 192.168.137.50` | LinkLayerAddress 是真的 MAC（不是 `00-00-00-00-00-00`），State `Reachable` |
 | 4 SCPI | 見下方 | 印出 `RIGOL TECHNOLOGIES,MSO5104,...` |
-| 5 工具 | `cd D:\code\_TI_CCS_no_chinese\JEV_accel; .\.venv\Scripts\python.exe -m jev_accel menu --jev off` | 回傳 JSON，含 `"visible": true/false` |
+| 5 工具 | `cd D:\code\_TI_CCS_no_chinese\CCS_LLM_WIKI_share\JEV_accel; $env:SCOPE_MODEL='rigol'; .\.venv\Scripts\python.exe -m jev_accel menu --jev off` | 回傳 JSON，含 `"visible": true/false` |
 
 步驟 4 的指令：
 
@@ -94,10 +96,31 @@ python -c "import socket; s=socket.socket(); s.settimeout(3); s.bind(('192.168.1
 | 步驟 2、3 不通（ARP 是 00-00-…） | 示波器沒開機、線鬆了、示波器 IP 不是 .50 | 重插線；照第 3 節檢查面板上的 IP |
 | ping 通，但步驟 4 逾時或被拒 | 示波器 LAN 的遠端控制沒開，或剛改完 IP 還在套用 | 等幾秒再試；確認面板 LAN 狀態；必要時重開示波器 |
 | 步驟 4 有回應但不是 RIGOL | 封包走了 Wi-Fi（沒有 bind），或 .50 是別的裝置 | 一定要 bind `192.168.137.1`；確認線是直連 |
-| 示波器只能用別的 IP | DHCP 打開了，或設定被重設 | 照第 3 節改回 .50。臨時不想改的話，用環境變數 `SCOPE_ADDR=<新IP>`，或在 `config.local.json` 寫 `{"scope": {"addr": "<新IP>"}}`，不需要改程式 |
+| 示波器只能用別的 IP | DHCP 打開了，或設定被重設 | 照第 3 節改回 .50。臨時不想改的話，用環境變數 `SCOPE_ADDR=<新IP>`，或在 `config.local.json` 寫 `{"scope": {"rigol": {"addr": "<新IP>"}}}`，不需要改程式 |
 
 資料來源：`@CCS_LLM_WIKI\oscilloscope-mso5104.md`、`CCS_LLM_WIKI_share\LLM_WIKI\rigol-scope.md`，以及 2026-10-07 在本機做的只讀網路檢查。
 
 ## 7. 實測紀錄
 
 2026-10-07 恢復連線後：`*IDN?` 回 `RIGOL TECHNOLOGIES,MSO5104` 與韌體版號，ARP 狀態 Reachable，網卡 1 Gbps，`pytest -m hw` 3/3 通過。
+
+## Keysight DSO-X 4034A
+
+```
+電腦「乙太網路」網卡                     Keysight DSO-X 4034A 背面 LAN 孔
+192.168.137.1 / 24   ── 網路線直連 ──   192.168.137.60 / 255.255.255.0
+                                         閘道 192.168.137.1
+                                         SCPI：TCP 5025
+```
+
+- 出廠預設是 DHCP＋AutoIP。直接接電腦時沒有 DHCP 伺服器，示波器會落在 169.254.x.x，從 192.168.137.1 ping 不到、ARP 也看不到。2026-10-12 第一次接上時就是這樣。
+- 面板：[Utility] → I/O → LAN Settings → 組態：DHCP 關、AutoIP 關、手動開 → 位址：IP `192.168.137.60`、遮罩 `255.255.255.0`、閘道 `192.168.137.1` → 套用。這台沒有 `:LAN` SCPI，只能從面板改。
+- 網卡連上時顯示 100 Mbps（這台的 LAN 是 10/100）。
+- 驗證：`ping -S 192.168.137.1 192.168.137.60` 約 1–2 ms；`*IDN?` 回 `AGILENT TECHNOLOGIES,DSO-X 4034A,...`（舊品牌名，正常）。
+
+```powershell
+python -c "import socket; s=socket.socket(); s.settimeout(3); s.bind(('192.168.137.1',0)); s.connect(('192.168.137.60',5025)); s.sendall(b'*IDN?\n'); print(s.recv(200)); s.close()"
+```
+
+- JEV：`config.json` 的 `scope.model` 是 `keysight`。`cd D:\code\_TI_CCS_no_chinese\CCS_LLM_WIKI_share\JEV_accel; .\.venv\Scripts\python.exe -m jev_accel menu --jev off` 回傳 JSON 就算通。
+- 換 IP 不想改檔：環境變數 `KS_ADDR`（`keysight` MCP 與腳本）、`SCOPE_ADDR`（JEV），或 `config.local.json` 寫 `{"scope": {"keysight": {"addr": "<新IP>"}}}`。

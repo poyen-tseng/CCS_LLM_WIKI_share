@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jev_accel"
 version = "0.1.0"
-description = "Rule + Jev decision gates for agents driving a TI F280049C LaunchPad and a RIGOL MSO5104"
+description = "Rule + Jev decision gates for agents driving a TI F280049C LaunchPad and a lab scope (Keysight DSO-X 4034A or RIGOL MSO5104)"
 requires-python = ">=3.11"
 dependencies = ["typesafe-sdk==0.7.2", "mcp==2.3.0", "numpy>=2", "pillow>=10"]
 
@@ -22,5 +22,5 @@ where = ["src"]
 testpaths = ["tests"]
 markers = [
     "jev: calls the TypeSafe Jev API (needs TYPESAFE_API_KEY)",
-    "hw: needs the RIGOL MSO5104 reachable on the LAN",
+    "hw: needs the configured scope (scope.model) reachable on the LAN",
 ]

@@ -1,4 +1,4 @@
-# 給 Agent 的規則：操作 MSO5104 與 F280049C 時先問 jev-scope，操作 CCS 時先問 jev-ccs
+# 給 Agent 的規則：操作示波器（Keysight DSO-X 4034A 或 MSO5104）與 F280049C 時先問 jev-scope，操作 CCS 時先問 jev-ccs
 
 `jev-scope`／`jev-ccs` MCP（或 `python -m jev_accel ...`）會先用規則判斷，判斷不了時再問 Jev。一次呼叫就能拿到「判斷結果＋可直接送出的 SCPI、燒錄步驟或下一步」。照下面的順序使用，可以避免以前反覆拍照、看圖、搜尋路徑、重讀 log 的回合。
 
@@ -26,6 +26,8 @@
 示波器連不上時（逾時、ARP 是 00-00-…），先請使用者照 [SCOPE_IP_SETUP.md](SCOPE_IP_SETUP.md) 檢查，不要自己掃描網段。
 
 量測時注意：對**隱藏的通道**送 `:MEAS:ITEM? ...,CHANn`，RIGOL 會把那個通道打開。兩個通道同時開著時，每個通道的記憶體深度會減半（實測從 80k 變成 20k）。只量已經顯示的通道；量完後如果要還原，送 `:CHANn:DISP 0`。
+
+Keysight DSO-X 4034A（`config.json` 的 `scope.model` 是 `keysight`）：NORM sweep 等觸發時，波形與量測查詢會卡住整台示波器，直到有觸發。不要自己送 `:MEAS`／`:WAV` 查詢，先用 `jev_check_frame` 或 `keysight` MCP（它們會先判斷 `run_state`）。卡住時執行 `MCP\scope-keysight-dsox4000\keysight.py recover`。其他差異見 `LLM_WIKI/keysight-scope.md`。
 
 硬體實測（2026-10-07）得到的規則：
 - `jev_check_frame` 回傳 `hint`（畫面被截斷）時，不要自己算 offset，直接用 `apply=true` 或 `jev_autoframe` 重新取景。截斷時量到的 VTOP/VBASE 是螢幕邊緣，用它們算出來的數值會讓畫面更糟。

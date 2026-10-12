@@ -30,7 +30,7 @@ def _frame_input(d: dict) -> FrameInput:
 
 
 def decide_case(bridge: str, case: dict, jev_mode: str) -> tuple[object, dict]:
-    cfg = load_config()
+    cfg = load_config("rigol")  # the recorded cases come from the RIGOL MSO5104
     if bridge == "frame":
         out = tools.decide_frame(_frame_input(case["input"]), jev_mode, cfg=cfg)
         return out["next_fix"], out

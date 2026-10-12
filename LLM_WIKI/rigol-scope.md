@@ -1,6 +1,6 @@
 # RIGOL MSO5104 遠端截圖
 
-用 LAN 控制 RIGOL MSO5104，截出波形置中、放大、有量測線的圖。下面的規則都來自 2026-10-07 實際量 GPIO0 上升緣的結果。MCP 伺服器見 [MCP/rigol-mso](../MCP/rigol-mso/README.md)，這頁用到的腳本在 [MCP/rigol-mso/tools](../MCP/rigol-mso/tools)。
+用 LAN 控制 RIGOL MSO5104，截出波形置中、放大、有量測線的圖。下面的規則都來自 2026-10-07 實際量 GPIO0 上升緣的結果。MCP 伺服器見 [MCP/scope-rigol-mso5000](../MCP/scope-rigol-mso5000/README.md)，這頁用到的腳本在 [MCP/scope-rigol-mso5000/tools](../MCP/scope-rigol-mso5000/tools)。
 
 截圖、診斷、選單與自動取景先照 [jev.md](jev.md) 呼叫 `jev-scope`。`ready=true` 才截一張圖。
 
@@ -8,7 +8,7 @@
 
 ## 連線
 
-- SCPI 走原始 TCP，`192.168.137.50:5555`。位址寫在 `MCP/rigol-mso/config.json`。
+- SCPI 走原始 TCP，`192.168.137.50:5555`。位址寫在 `MCP/scope-rigol-mso5000/config.json`。
 - Windows 可能把 192.168.137.x 路由到 Wi-Fi。連線前先把 client socket 綁在本機有線／熱點位址 `192.168.137.1`，再 `connect`。
 - 靜態 IP 用下面這串設定，重開機後仍有效：
 
@@ -131,7 +131,7 @@
 
 ## 腳本
 
-[MCP/rigol-mso/tools](../MCP/rigol-mso/tools) 有三個檔。Python 只用標準函式庫，不需要 venv。
+[MCP/scope-rigol-mso5000/tools](../MCP/scope-rigol-mso5000/tools) 有三個檔。Python 只用標準函式庫，不需要 venv。
 
 | 檔 | 用途 |
 | --- | --- |
@@ -168,7 +168,7 @@ python capture_edge.py
 - `--bind`：連線前綁的本機位址。預設 `SCOPE_BIND`，再來是 `192.168.137.1`。給 `""` 就不綁。
 - `--vscale`、`--offset`、`--level`、`--tdiv`：預設 0.6 V/div、-1.65 V、1.95 V、5e-9 s/div。
 - `--go-file`：預設 `%TEMP%\gpio_edge_go.txt`。改了 `--signal-dir` 時要一起改。
-- `--out-dir`、`--prefix`：預設 `MCP/rigol-mso/captures`（不進 git）與 `GPIO0_rise`。輸出 `<prefix>_10_90.png` 與 `<prefix>_swing.png`。
+- `--out-dir`、`--prefix`：預設 `MCP/scope-rigol-mso5000/captures`（不進 git）與 `GPIO0_rise`。輸出 `<prefix>_10_90.png` 與 `<prefix>_swing.png`。
 - `--config-only`：只設定示波器就結束。
 - `--reuse`：不設定、不擷取，直接用目前凍結的波形重放量測線、重截圖。CCS 腳本不用再跑。
 - `--menu-off`：第一張截圖前按一次 MOFF。只在側邊選單看得到時才加。

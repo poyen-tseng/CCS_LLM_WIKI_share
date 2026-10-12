@@ -30,7 +30,7 @@
 
 ## MCP
 
-[MCP](MCP) 只放本機 MCP 伺服器，一台伺服器一個子夾。目前有 [rigol-mso](MCP/rigol-mso)，用區域網路控制 RIGOL MSO5000。
+[MCP](MCP) 只放本機 MCP 伺服器，一台伺服器一個子夾。目前有 [scope-rigol-mso5000](MCP/scope-rigol-mso5000)（RIGOL MSO5000）與 [scope-keysight-dsox4000](MCP/scope-keysight-dsox4000)（Keysight DSO-X 4034A），都用區域網路控制。
 
 ## JEV_accel
 

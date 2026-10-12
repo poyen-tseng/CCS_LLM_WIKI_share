@@ -1,7 +1,10 @@
-"""D: side-menu detection on a BLACK-background screenshot (:DISP:DATA? ON,OFF,BMP).
+"""D: menu detection on a BLACK-background screenshot.
 
-The open menu draws a blue border around x 850-862. A row counts as a hit when any pixel in that band
-has b > b_min, r < r_max, b-g > bg_min. Calibrated on the real scope 2026-10-07: the Measure menu border
+Keysight DSO-X 4034A (menu.kind = "dialog_text"): see text_stats(); a dialog over the graticule is what
+spoils a report screenshot there (the softkeys and side bar sit outside the graticule).
+
+RIGOL MSO5104 (:DISP:DATA? ON,OFF,BMP): the open menu draws a blue border around x 850-862. A row counts
+as a hit when any pixel in that band has b > b_min, r < r_max, b-g > bg_min. Calibrated on the real scope 2026-10-07: the Measure menu border
 is (0,44,90), so the wiki's b>120 matched 0 rows open AND closed; b>70 gives 341 open vs 0 closed.
 """
 from __future__ import annotations
@@ -31,8 +34,28 @@ def bmp_to_array(bmp: bytes) -> np.ndarray:
     return px[::-1] if bottom_up else px
 
 
+def text_stats(rgb: np.ndarray, c: dict) -> dict:
+    """Keysight: a dialog over the graticule is transparent on the black screen (frame, title bar and
+    white text; the trace shows through). A graticule row is a hit when it holds at least min_px bright
+    neutral pixels (min channel >= text_min, max-min <= text_spread). Traces are colored and grid lines
+    are (50,50,50). Calibrated 2026-10-12 with the LAN dialog: 203 rows open, 0 closed."""
+    band = rgb[c["y0"]: c["y1"], c["x0"]: c["x1"] + 1].astype(np.int16)
+    lo, hi = band.min(axis=2), band.max(axis=2)
+    bright = (lo >= c["text_min"]) & (hi - lo <= c["text_spread"])
+    per_row = bright.sum(axis=1)
+    rows = int((per_row >= c["min_px"]).sum())
+    return {
+        "hit_rows": rows,
+        "band_rows": int(band.shape[0]),
+        "hit_frac": round(rows / max(band.shape[0], 1), 3),
+        "bright_px": int(bright.sum()),
+        "image_size": [int(rgb.shape[1]), int(rgb.shape[0])],
+    }
+
 def stats(rgb: np.ndarray, cfg: dict) -> dict:
     c = cfg["menu"]
+    if c.get("kind") == "dialog_text":
+        return text_stats(rgb, c)
     band = rgb[c["y0"]: c["y1"], c["x0"]: c["x1"] + 1].astype(np.int16)
     r, g, b = band[..., 0], band[..., 1], band[..., 2]
     hit = (b > c["b_min"]) & (r < c["r_max"]) & (b - g > c["bg_min"])

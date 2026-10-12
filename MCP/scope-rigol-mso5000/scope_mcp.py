@@ -19,7 +19,9 @@ server = MCPServer(
         "Controls a RIGOL MSO5104 oscilloscope (4 ch, 100 MHz) over LAN. "
         "Typical flow: scope_status -> adjust with scope_set_* or scope_autoscale -> "
         "scope_measure / scope_capture / scope_screenshot. Voltages are probe-corrected, so check the "
-        "channel probe ratio. Waveform CSVs and screenshots are saved under the captures folder."
+        "channel probe ratio. Waveform CSVs and screenshots are saved under the captures folder. "
+        "Report screenshots must have a white background: :DISP:DATA? ON,ON,PNG "
+        "(color, invert, format). Invert OFF is a black background."
     ),
 )
 
@@ -78,7 +80,7 @@ def scope_status() -> dict:
 
 @server.tool()
 def scope_screenshot() -> list:
-    """Capture the scope screen as a PNG image (also saved to the captures folder)."""
+    """Capture the scope screen as a PNG with a white background (also saved to the captures folder)."""
     png = _call(lambda s: s.screenshot())
     path = CAPTURES / f"{_stamp()}_screen.png"
     path.parent.mkdir(parents=True, exist_ok=True)

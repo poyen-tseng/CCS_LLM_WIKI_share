@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 
-MIN_TDIV = 5e-9  # MSO5104 fastest timebase
+MIN_TDIV = 5e-9  # MSO5104 fastest timebase (the default; the scope_io dialects pass their own)
 STD_MANTISSAS = (1.0, 2.0, 5.0)
 
 
@@ -39,19 +39,21 @@ def vdiv_for(vmax: float, vmin: float, margin: float = 1.15) -> float:
     return round(v, 6)
 
 
-def tdiv_for_edge(rise_s: float | None) -> float:
+def tdiv_for_edge(rise_s: float | None, min_tdiv: float = MIN_TDIV) -> float:
     if not rise_s or rise_s <= 0:
-        return MIN_TDIV
-    return max(MIN_TDIV, round_125(rise_s / 2.0, up=False))
+        return min_tdiv
+    return max(min_tdiv, round_125(rise_s / 2.0, up=False))
 
 
-def tdiv_for_delay(delay_s: float) -> float:
-    return max(MIN_TDIV, round_125(abs(delay_s) / 8.0, up=True))
+def tdiv_for_delay(delay_s: float, min_tdiv: float = MIN_TDIV) -> float:
+    return max(min_tdiv, round_125(abs(delay_s) / 8.0, up=True))
 
 
 def plan(vtop: float, vbase: float, vmax: float | None = None, vmin: float | None = None,
-         mode: str = "edge", rise_s: float | None = None, delay_s: float | None = None) -> dict:
-    """Return the settings a centered, unclipped report frame needs."""
+         mode: str = "edge", rise_s: float | None = None, delay_s: float | None = None,
+         min_tdiv: float = MIN_TDIV) -> dict:
+    """Return the settings a centered, unclipped report frame needs. min_tdiv is the scope's fastest
+    timebase (5 ns/div on the MSO5104, 2 ns/div on the DSO-X 4034A)."""
     vmax = vtop if vmax is None else vmax
     vmin = vbase if vmin is None else vmin
     mid = (vtop + vbase) / 2.0
@@ -63,9 +65,9 @@ def plan(vtop: float, vbase: float, vmax: float | None = None, vmin: float | Non
         "trigger_level": round(mid, 3),
     }
     if mode == "delay" and delay_s:
-        out["tdiv"] = tdiv_for_delay(delay_s)
+        out["tdiv"] = tdiv_for_delay(delay_s, min_tdiv)
         out["t_offset"] = delay_s / 2.0
     else:
-        out["tdiv"] = tdiv_for_edge(rise_s)
+        out["tdiv"] = tdiv_for_edge(rise_s, min_tdiv)
         out["t_offset"] = 0.0
     return out

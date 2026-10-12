@@ -7,7 +7,7 @@ from jev_accel.config import load_config
 from jev_accel.rules import autoframe, flash, menu
 from jev_accel.rules.frame import FrameInput, evaluate
 
-CFG = load_config()
+CFG = load_config("rigol")  # the fixtures and synthetic screens are RIGOL MSO5104 data
 
 
 @pytest.fixture(autouse=True)
