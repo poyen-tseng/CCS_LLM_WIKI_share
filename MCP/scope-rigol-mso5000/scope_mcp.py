@@ -10,8 +10,9 @@ from typing import Literal
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from mcp.server.mcpserver import Image, MCPServer  # noqa: E402
+from mcp.server.mcpserver.exceptions import ToolError  # noqa: E402
 
-from rigol import CAPTURES, MSO5000, ScopeError, _stamp  # noqa: E402
+from rigol import CAPTURES, MSO5000, ScopeError, _resolve_resource, _stamp  # noqa: E402
 
 server = MCPServer(
     "scope",
@@ -49,13 +50,15 @@ def _get() -> MSO5000:
 
 
 def _call(fn):
-    """Run fn(scope) under a lock; reconnect once if the socket went stale."""
+    """Run fn(scope) under a lock; reconnect once if the socket went stale.
+    Failures are raised as ToolError: the MCP server passes only a ToolError's message to the model,
+    any other exception reaches it as a bare "Error executing tool <name>"."""
     global _scope
     with _lock:
         try:
             return fn(_get())
-        except ScopeError:
-            raise
+        except ScopeError as e:
+            raise ToolError(str(e)) from None
         except Exception:
             if _scope is not None:
                 try:
@@ -63,7 +66,12 @@ def _call(fn):
                 except Exception:
                     pass
             _scope = None
+        try:
             return fn(_get())
+        except ScopeError as e:
+            raise ToolError(str(e)) from None
+        except Exception as e:
+            raise ToolError(f"cannot reach the RIGOL at {_resolve_resource(None)}: {type(e).__name__}: {e}") from None
 
 
 @server.tool()

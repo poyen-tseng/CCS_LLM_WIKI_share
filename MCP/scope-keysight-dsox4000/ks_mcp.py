@@ -14,7 +14,7 @@ import pyvisa  # noqa: E402
 from mcp.server.mcpserver import Image, MCPServer  # noqa: E402
 from mcp.server.mcpserver.exceptions import ToolError  # noqa: E402
 
-from keysight import CAPTURES, DEMO_FUNCTIONS, DSOX4000, ScopeError, _stamp  # noqa: E402
+from keysight import CAPTURES, DEMO_FUNCTIONS, DSOX4000, ScopeError, _resolve_resource, _stamp  # noqa: E402
 
 server = MCPServer(
     "keysight",
@@ -64,22 +64,32 @@ def _call(fn):
         except ScopeError as e:
             raise ToolError(str(e)) from None
         except pyvisa.errors.VisaIOError as e:
-            if e.error_code != pyvisa.constants.StatusCode.error_timeout or _scope is None:
-                raise
-            t0 = time.perf_counter()
-            _scope.recover()
-            raise ToolError(
-                "the scope did not answer (a waveform or measurement query blocks while the trigger waits); "
-                f"recovered with a VXI-11 device clear and a forced trigger in {(time.perf_counter() - t0) * 1000:.0f} ms. "
-                "Check ks_status run_state and the trigger level before retrying.") from None
-        except Exception:
-            if _scope is not None:
+            if e.error_code == pyvisa.constants.StatusCode.error_timeout and _scope is not None:
+                t0 = time.perf_counter()
                 try:
-                    _scope.close()
+                    _scope.recover()
                 except Exception:
-                    pass
-            _scope = None
+                    pass  # scope gone: fall through to the reconnect below
+                else:
+                    raise ToolError(
+                        "the scope did not answer (a waveform or measurement query blocks while the trigger waits); "
+                        f"recovered with a VXI-11 device clear and a forced trigger in "
+                        f"{(time.perf_counter() - t0) * 1000:.0f} ms. "
+                        "Check ks_status run_state and the trigger level before retrying.") from None
+        except Exception:
+            pass
+        if _scope is not None:  # stale socket or no connection yet: reconnect once
+            try:
+                _scope.close()
+            except Exception:
+                pass
+        _scope = None
+        try:
             return fn(_get())
+        except ScopeError as e:
+            raise ToolError(str(e)) from None
+        except Exception as e:
+            raise ToolError(f"cannot reach the Keysight at {_resolve_resource(None)}: {type(e).__name__}: {e}") from None
 
 
 @server.tool()
