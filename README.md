@@ -28,6 +28,12 @@
 
 做到哪裡、上升緣截圖與還沒量的項目見 [STATUS.md](Oscilloscope_read/STATUS.md)。操作規格在 [TASK.md](Oscilloscope_read/TASK.md)。
 
+## Timer_lab
+
+[Timer_lab](Timer_lab) 是 LAUNCHXL-F280049C 的 Timer0 實驗：Timer0 每 0.2 秒中斷一次，ISR 切換 GPIO0（J8 pin 80），輸出 2.5 Hz 方波。用 CCS 匯入 [TIMER0_EX](Timer_lab/TIMER0_EX) 即可建置（RAM 連結）。需要 CCS，以及安裝在 `C:\ti\C2000Ware_5_00_00_00` 的 C2000Ware。`Debug/` 是編譯結果，沒有放進這個 repository。
+
+操作規格在 [TASK.md](Timer_lab/TASK.md)，進度在 [STATUS.md](Timer_lab/STATUS.md)。`TIMER0_EX/tools/timer_math.py` 不需硬體即可驗算計時設定；`tools/flash_and_run.js` 的路徑相對於 `tools/`。
+
 ## MCP
 
 [MCP](MCP) 只放本機 MCP 伺服器，一台伺服器一個子夾。目前有 [scope-rigol-mso5000](MCP/scope-rigol-mso5000)（RIGOL MSO5000）與 [scope-keysight-dsox4000](MCP/scope-keysight-dsox4000)（Keysight DSO-X 4034A），都用區域網路控制。
