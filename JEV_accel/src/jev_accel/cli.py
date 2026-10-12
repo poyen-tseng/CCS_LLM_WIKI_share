@@ -70,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
     mp.add_argument("--mode", choices=["flash", "ram"])
 
     ld = sub.add_parser("ccs-load", help="load a program through the warm debug daemon")
-    ld.add_argument("project", nargs="?", help="project name under projects_root")
+    ld.add_argument("project", nargs="?", help="name under projects_root, name with config projects.<name>.path, or absolute path")
     ld.add_argument("--program")
     ld.add_argument("--ccxml")
     ld.add_argument("--no-run", action="store_true")

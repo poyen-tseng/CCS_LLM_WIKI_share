@@ -45,6 +45,21 @@ C2000Ware 預設 SCI 腳位與電路圖一致：`device.h` 的 `DEVICE_GPIO_CFG_
 
 ADC 標籤有 ADCINA0、ADCINA3、ADCINA4、ADCINA6、ADCINA9、ADCINC1。完整接頭編號以 SPRUII7B Figure 3（BoosterPack pinout）與電路圖原圖為準。
 
+### GPIO0／GPIO1／GPIO6 的接頭位置（2026-10-12 查證）
+
+上表刻意不寫接頭編號，因為電路圖抽取時表格被打散。這三腳後來有兩張圖和一次實測可對照，編號卻互相衝突：
+
+| 信號 | 封裝腳（PZ，精簡版 Table 4-1） | 講義 pin map（舊版 Figure 3） | SPRUII7B Rev B Figure 3 |
+| --- | --- | --- | --- |
+| GPIO0 | 79 | J8、80 | 60 |
+| GPIO1 | 78 | J8、79 | 59 |
+| GPIO6 | 97 | J8、78 | 58 |
+| 同排另一腳 | | J6、60 = GND | 80 = GND |
+
+- 兩版圖指的是 BoosterPack site 2（MCU 下方）右側接頭上的**同一個實體位置**，只有欄名與號碼不同。使用說明第 1.7.1 節（known issues）寫：PCB 絲印、電路圖與 Quick Start 卡把 J6／J8 與 51–60／71–80 標反。
+- 2026-10-07 依講義標的 J8 80／78 接探棒，量到 GPIO0 與 GPIO6，GPIO6 反相行為正確（`Oscilloscope_read/STATUS.md`）。
+- 照位置接，不要只照數字：照 Rev B 的「80」去接會碰到 GND。拿不準時，GPIO0 那排的另一腳應是 GND。
+
 ## 報告簡報範例
 
 `附件_簡報範例.pptx` 不是技術手冊，是 2026-09-29 那次 OSC／GPIO 報告的版型。要點：
@@ -52,5 +67,5 @@ ADC 標籤有 ADCINA0、ADCINA3、ADCINA4、ADCINA6、ADCINA9、ADCINC1。完整
 - 檔名：`日期_主題_組別_報告人姓名`，例如 `20250923_OSC及GPIO_第一組_XXX`。
 - 中文標楷體，英文 Times New Roman，最小 16 pt，每頁右下角寫製作者。
 - 目錄建議：程式碼說明、振盪器波形量測、通用型輸出輸入波形量測。
-- 量測點仍是 C39 下方與 GND。GPIO 實驗是 GPIO0 輸入、GPIO6 輸出；簡報與 GPIO 講義第 35 頁都是輸入高時輸出低。`course-notes.md` 沒有「例 2」這個標題。封裝腳號見該頁，不要用講義圖上的 Pin 80／78。
+- 量測點仍是 C39 下方與 GND。GPIO 實驗是 GPIO0 輸入、GPIO6 輸出；簡報與 GPIO 講義第 35 頁都是輸入高時輸出低。`course-notes.md` 沒有「例 2」這個標題。封裝腳號見該頁。講義圖上的 Pin 80／78 是 BoosterPack 接頭編號，不是封裝腳號，見「GPIO0／GPIO1／GPIO6 的接頭位置」的對照表。
 - 範例投影片把 `InitSysCtrl` 的路徑寫成 `GPIO_EX1/Init.c/Init_GPIO`。那是錯的。`InitSysCtrl` 在 `f28004x_sysctrl.c`，`Init_GPIO` 才在 `Init.c`。

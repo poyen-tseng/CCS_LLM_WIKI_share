@@ -21,10 +21,11 @@
 - [ ] `ks_measure` FREQ／PER／PWID／NWID／PDUT／VTOP／VBASE，對照 TASK.md 合格標準。
 - [ ] （選做）GPIO0 外接 LED 看閃爍。
 
-## 已知工具問題
+## 工具問題（2026-10-12 已修正）
 
-- `ccs_build` 給絕對路徑時，gmake 在正確資料夾執行，但它內建的 map 檢查用專案名到 `D:/code/_TI_CCS_no_chinese/TIMER0_EX` 找 `.map`，報「not found」。單獨呼叫 `ccs_map_check` 給絕對路徑則正常。
-- `ccs_env` 只掃 `D:/code/_TI_CCS_no_chinese` 的直接子資料夾，不會列出 `Timer_lab/TIMER0_EX`。
+- 以前 `ccs_build`／`ccs_load` 給絕對路徑時，`.map` 檢查會到 `D:/code/_TI_CCS_no_chinese/TIMER0_EX` 找檔而報 not found，`ccs_load` 會因此拒絕下載。已修正。
+- `JEV_accel/config.json` 已用 `"path": "../Timer_lab/TIMER0_EX"` 登記，`ccs_build("TIMER0_EX")`、`ccs_load(project="TIMER0_EX")` 直接用名字即可，`ccs_env` 也會列出它。實測 `ccs_build` 以名字與絕對路徑都回 `map.ok = true`（ram）。
+- jev-ccs MCP 伺服器要重新啟動才會載入修正後的程式。
 
 ## 倉庫裡沒有的檔
 

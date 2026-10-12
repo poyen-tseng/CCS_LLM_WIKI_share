@@ -36,6 +36,9 @@ Keysight 在 NORM sweep 等觸發時，量測與波形查詢會卡住整台示�
 
 1. 先 `ccs_env`。路徑、XDS110、COM、誰佔著探針、daemon 是否已連線都在這一次裡面。不要自己搜尋 gmake、dss.bat、ccstudio。
 2. 建置用 `ccs_build`。成功時回傳已含 `.map` 檢查。gmake 說 up to date 但原始碼比上次建置新時，它會標成 `stale_build` 並自動 touch 後再編一次。
+   - `project` 可以是 `projects_root`（`D:/code/_TI_CCS_no_chinese`）下的名字、絕對路徑，或在 `JEV_accel/config.json` 的 `projects.<名字>.path` 登記過的名字（相對 `JEV_accel/`，名字要等於資料夾名）。倉庫裡的巢狀專案這樣登記，例如 `"TIMER0_EX": {"mode": "ram", "path": "../Timer_lab/TIMER0_EX"}`；登記後 `ccs_env` 也會列出它和它的 `dir`。
+   - 2026-10-12 以前，給絕對路徑時 `ccs_build` 與 `ccs_load` 的 `.map` 檢查會改到 `projects_root` 下找同名資料夾，回報 not found，`ccs_load` 因此拒絕下載。已修正。
+   - 第一次建置仍要先讓 CCS 匯入一次，產生 `Debug/makefile`，見 [cli-and-scripting.md](cli-and-scripting.md)。
 3. 燒錄與執行用 `ccs_load`、`ccs_run_control`。session 保持連線時，halt 與讀 PC 低於 0.1 秒。不要為了 halt 或讀 PC 再寫一支 `dss.bat` 或 `run.bat`。
 4. 把探針交給 CCS IDE 或其他腳本之前，先 `ccs_release`。daemon 佔著 XDS110 時，`dss.bat` 會印 Error -260；探針還在，那是 `probe_busy`。
 5. 子代理中斷，或不確定燒了沒有：讀 `JEV_accel/results/ccs_runs.jsonl` 的最後幾行（時間、程式、PC、成敗、耗時）。

@@ -85,7 +85,8 @@ InitSysPll(XTAL_OSC, IMULT_10, FMULT_0, PLLCLK_BY_2);
 - 輸入濾波：`GPyQSEL` 的 0 同步、1 三次取樣、2 六次取樣、3 非同步。取樣間隔在 `GPyCTRL` 的 `QUALPRD`。
 - `GPyODR`：0 push-pull，1 open-drain。
 - 講義實驗：GPIO0 當輸出量高電位與上升時間；GPIO0 當輸入，經 qualification 改變 GPIO6。輸入高時輸出低，見 `2_GPIO_lecture.pdf` 第 35 頁。程式位置是 `main.c` 的 `main` 與 `Init.c` 的 `Init_GPIO`。
-- 封裝腳號以精簡版 Table 4-1 的 100-pin PZ 欄為準：**GPIO0 是 pin 79，GPIO1 是 pin 78，GPIO6 是 pin 97**。講義第 30 頁圖上有 Pin 78 與 Pin 80，文字層沒把這兩個號碼對到 GPIO，不要拿 80／78 去量 GPIO0／GPIO6。
+- 封裝腳號以精簡版 Table 4-1 的 100-pin PZ 欄為準：**GPIO0 是 pin 79，GPIO1 是 pin 78，GPIO6 是 pin 97**。講義第 30 頁圖上有 Pin 78 與 Pin 80，畫在晶片框旁邊，但它們不是封裝腳號。2026-10-06 初建本頁時，講義文字層沒把這兩個號碼對到 GPIO，所以當時寫「不要拿 80／78 去量」。
+- 之後查證（2026-10-12）：80／78 是 LaunchPad **BoosterPack 接頭**的編號。GPIO 講義第 32 頁的 pin map 與手寫紅字「J8、80」用的是舊版 SPRUII7B Figure 3，GPIO0／GPIO1／GPIO6 那一欄標 J8、80／79／78。2026-10-07 在板上量過，講義標的位置確實是 GPIO0 與 GPIO6（`Oscilloscope_read/STATUS.md`）。陷阱：使用說明 SPRUII7B Rev B 的 Figure 3 把**同一個位置**編成 60／59／58，同一排另一腳的 **80 是 GND**；第 1.7.1 節也寫了 J6／J8 絲印與編號互換的勘誤。所以照位置接，不要只照數字。拿不準時，GPIO0 那排的另一腳應量到 GND。詳見 [board-pins.md](board-pins.md)。
 
 ## 寫在別頁、沒有重抄進這裡的檔
 

@@ -9,3 +9,4 @@ results/*.json
 results/*.out
 !results/.gitkeep
 config.local.json
+results/ccs_state/

@@ -14,7 +14,7 @@ from pathlib import Path
 
 from . import ccs_client
 from . import questions as Q
-from .config import RESULTS, load_config
+from .config import RESULTS, ROOT, load_config
 from .rules import build as build_rules
 from .rules import ccs as ccs_rules
 from .tools import _resolve
@@ -34,9 +34,23 @@ def _decode(b: bytes) -> str:
         return b.decode("cp950", errors="replace")  # cmd.exe DEL / CreateProcess messages on this PC are Big5
 
 
+def _config_path(name: str) -> Path | None:
+    """projects.<name>.path in config.json, for a project outside projects_root (relative to JEV_accel).
+    <name> must be the folder name: mode, .out and .map are looked up by it."""
+    rel = _cfg()["projects"].get(name, {}).get("path")
+    if not rel:
+        return None
+    p = Path(rel)
+    return (p if p.is_absolute() else ROOT / p).resolve()
+
+
 def project_dir(project: str) -> Path:
+    """An absolute path, a name with a config path, or a name under projects_root. Pass str(pd) on, never
+    pd.name: the name alone would be resolved under projects_root again."""
     p = Path(project)
-    return p if p.is_absolute() else Path(_cfg()["projects_root"]) / project
+    if p.is_absolute():
+        return p
+    return _config_path(project) or Path(_cfg()["projects_root"]) / project
 
 
 def _proj_mode(pd: Path) -> str:
@@ -142,11 +156,16 @@ def ccs_env() -> dict:
     ping = ccs_client.ping()
     owner = ccs_rules.probe_owner(hf["procs"], ping is not None, bool(ping and ping.get("connected")))
     projects = {}
-    for pd in sorted(Path(c["projects_root"]).iterdir()):
+    # children of projects_root, plus projects registered with a config path (e.g. Timer_lab/TIMER0_EX);
+    # each name is listed where project_dir() resolves it, so ccs_build(name) builds what ccs_env shows
+    names = {pd.name for pd in Path(c["projects_root"]).iterdir() if pd.is_dir()}
+    names |= {n for n in c["projects"] if _config_path(n)}
+    for name in sorted(names):
+        pd = project_dir(name)
         if not (pd / "Debug" / "makefile").exists():
             continue
         p = _paths(pd)
-        projects[pd.name] = {"mode": _proj_mode(pd), "ccxml": str(p["ccxml"]) if p["ccxml"] else None,
+        projects[pd.name] = {"dir": str(pd), "mode": _proj_mode(pd), "ccxml": str(p["ccxml"]) if p["ccxml"] else None,
                              "out": str(p["out"]) if p["out"].exists() else None,
                              "out_mtime": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(p["out"].stat().st_mtime))
                              if p["out"].exists() else None,
@@ -219,7 +238,7 @@ def ccs_build(project: str, clean: bool = False, warm_daemon: bool = True, jev_m
                daemon_warming=bool(daemon and not daemon.get("error")))
     if out["result"] == "ok":
         _save_state(pd, built_hashes=_hashes(pd), built_at=time.strftime("%Y-%m-%dT%H:%M:%S"))
-        out["map"] = ccs_map_check(pd.name)
+        out["map"] = ccs_map_check(str(pd))
     out["log_tail"] = "\n".join(text.splitlines()[-12:])[-1200:]
     return out
 
@@ -283,7 +302,7 @@ def ccs_load(project: str | None = None, program: str | None = None, ccxml: str 
             if ch["changed"]:
                 return {"state": "rebuild_needed", "source": "l0", "pre": pre,
                         "next_step": f"sources changed since the last build ({', '.join(ch['changed'][:5])}): ccs_build first"}
-            mc = ccs_map_check(pd.name)
+            mc = ccs_map_check(str(pd))
             pre["map_ok"] = mc["ok"]
             if not mc["ok"]:
                 return {"state": "bad_image", "source": "l0", "pre": pre, "map": mc,

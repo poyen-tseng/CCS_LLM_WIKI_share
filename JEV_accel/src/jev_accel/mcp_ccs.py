@@ -34,7 +34,8 @@ server = MCPServer(
 @server.tool()
 def ccs_env() -> dict:
     """Paths, XDS110 PnP, COM ports, probe owner (free / daemon / ide / dss_script), daemon status and
-    each project's ccxml, .out and sources changed since the last build. Do not search the disk for these."""
+    each project's dir, ccxml, .out and sources changed since the last build (projects_root children and
+    config projects with a path). Do not search the disk for these."""
     return tools_ccs.ccs_env()
 
 
@@ -42,14 +43,16 @@ def ccs_env() -> dict:
 def ccs_build(project: str, clean: bool = False, warm_daemon: bool = True, jev_mode: JevMode = "auto") -> dict:
     """gmake the project's Debug folder, classify the log, and on success check the .map.
     result: missing_compiler, slow_path, include_path, syntax_error, undefined_symbol, memory_placement,
-    stale_build, other_error, ok. A stale build (gmake said up to date, sources differ) is touched and rebuilt once."""
+    stale_build, other_error, ok. A stale build (gmake said up to date, sources differ) is touched and rebuilt once.
+    project: a name under projects_root, a name with config projects.<name>.path, or an absolute path."""
     return tools_ccs.ccs_build(project, clean, warm_daemon, jev_mode)
 
 
 @server.tool()
 def ccs_map_check(project: str, mode: Literal["flash", "ram"] | None = None) -> dict:
     """Parse Debug/<project>.map: entry, codestart, .TI.ramfunc load/run, unplaced sections, memory use.
-    flash requires codestart at 0x80000 and ramfunc loaded in flash but run in RAM."""
+    flash requires codestart at 0x80000 and ramfunc loaded in flash but run in RAM.
+    project: a name under projects_root, a name with config projects.<name>.path, or an absolute path."""
     return tools_ccs.ccs_map_check(project, mode)
 
 
@@ -58,7 +61,8 @@ def ccs_load(project: str | None = None, program: str | None = None, ccxml: str 
              run: bool = True, verify: bool = True, check: bool = True, jev_mode: JevMode = "auto") -> dict:
     """Reset, loadProgram and verify through the warm daemon, then optionally run. Returns PC and step times.
     Refuses when sources changed since the last build or the .map does not match the project mode.
-    Give a project name, or program + ccxml."""
+    Give a project (name under projects_root, name with config projects.<name>.path, or absolute path),
+    or program + ccxml."""
     return tools_ccs.ccs_load(project, program, ccxml, run, verify, check, jev_mode)
 
 

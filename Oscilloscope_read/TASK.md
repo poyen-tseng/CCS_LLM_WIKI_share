@@ -24,12 +24,14 @@
 
 ## 腳位
 
-| 信號    | 晶片腳    | 開發板               | Pin map 標示    |
-| ----- | ------ | ----------------- | ------------- |
-| GPIO0 | Pin 80 | header J8，腳位編號 80 | PWM1A / GPIO0 |
-| GPIO6 | Pin 78 | header J8，腳位編號 78 | PWM4A / GPIO6 |
+| 信號    | 封裝腳（100-pin PZ） | 開發板接頭（講義 pin map）  | Pin map 標示    |
+| ----- | --------------- | ----------------- | ------------- |
+| GPIO0 | 79              | header J8，腳位編號 80 | PWM1A / GPIO0 |
+| GPIO6 | 97              | header J8，腳位編號 78 | PWM4A / GPIO6 |
 
 第 32 頁紅字填空只寫了 GPIO0：*GPIO0 is connected to the J8 header on the development board. The pin number is 80.* GPIO6 的 J8 / 78 來自第 30 頁的 Pin 78，以及第 32 頁同一張 pin map 的 J8 欄。
+
+第 30 頁的 Pin 80／78 是接頭編號，不是封裝腳號（精簡版 Table 4-1：GPIO0 是 79，GPIO6 是 97）。TI 使用說明 SPRUII7B Rev B 把同一位置編成 60／58，它的 80 是 GND。照講義標的位置接；2026-10-07 量過是對的。對照見 `LLM_WIKI/board-pins.md`。（2026-10-12 補註）
 
 ## Example 1：GPIO0 輸出高準位
 

@@ -144,3 +144,34 @@ def test_changed_sources_uses_hashes_not_mtimes(tmp_path, monkeypatch):
     os.utime(src, (old, old))  # copied with an old mtime: gmake would say 'up to date'
     ch = tools_ccs.changed_sources(pd)
     assert ch == {"basis": "hash", "changed": ["main.c"]}
+
+
+# --- projects outside projects_root ------------------------------------------------------------
+def _nested_project(tmp_path, monkeypatch, projects: dict):
+    """A built project at tmp/Elsewhere/Proj (RAM .map of GPIO_EX1), with projects_root an empty folder."""
+    monkeypatch.setattr(tools_ccs, "STATE_DIR", tmp_path / "state")
+    root = tmp_path / "root"
+    root.mkdir()
+    monkeypatch.setattr(tools_ccs, "_cfg", lambda: {"projects_root": str(root), "projects": projects})
+    pd = tmp_path / "Elsewhere" / "Proj"
+    (pd / "Debug").mkdir(parents=True)
+    (pd / "main.c").write_text("int a;\n")
+    (pd / "Debug" / "Proj.map").write_text((FX / "map" / "GPIO_EX1.map").read_text(encoding="utf-8"),
+                                           encoding="utf-8")
+    tools_ccs._save_state(pd, built_hashes=tools_ccs._hashes(pd))
+    return pd
+
+
+def test_load_checks_the_map_of_an_absolute_project_dir(tmp_path, monkeypatch):
+    # Timer_lab/TIMER0_EX: ccs_load re-resolved pd.name under projects_root and refused with "not found"
+    pd = _nested_project(tmp_path, monkeypatch, {"Proj": {"mode": "flash"}})
+    r = tools_ccs.ccs_load(project=str(pd))
+    assert r["state"] == "bad_image"  # returns before the daemon is asked
+    assert any("codestart at 0x0" in p for p in r["map"]["problems"]), r["map"]["problems"]
+
+
+def test_config_path_resolves_a_nested_project(tmp_path, monkeypatch):
+    pd = _nested_project(tmp_path, monkeypatch, {"Proj": {"mode": "ram", "path": str(tmp_path / "Elsewhere" / "Proj")}})
+    assert tools_ccs.project_dir("Proj") == pd.resolve()
+    assert tools_ccs.ccs_map_check("Proj")["ok"]
+    assert tools_ccs.project_dir("Other") == tmp_path / "root" / "Other"

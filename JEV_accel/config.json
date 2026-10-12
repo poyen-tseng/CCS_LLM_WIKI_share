@@ -21,7 +21,7 @@
           "projects_root": "D:/code/_TI_CCS_no_chinese",
           "daemon": {"port": 47011, "idle_s": 600, "timeout_ms": 180000, "start_wait_s": 10},
           "build_timeout_s": 600,
-          "projects": {"GPIO_EX1": {"mode": "ram"}, "TIMER0_EX": {"mode": "ram"}, "LED_test": {"mode": "flash"},
+          "projects": {"GPIO_EX1": {"mode": "ram"}, "TIMER0_EX": {"mode": "ram", "path": "../Timer_lab/TIMER0_EX"}, "LED_test": {"mode": "flash"},
                        "Feedback_test": {"mode": "flash", "verify": "tools/verify_com4.ps1"},
                        "Serial_Plotter": {"mode": "flash", "verify": "tools/verify_stream.ps1"}},
           "com_port": "COM4"}

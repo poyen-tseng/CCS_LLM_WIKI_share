@@ -32,6 +32,19 @@ ccs-server-cli.bat -noSplash -workspace "<workspace_dir>" -application com.ti.cc
 
 建置 `GPIO_EX1` 時，workspace 指的是 CCS 的 workspace 目錄，不是專案資料夾本身。專案若已在 CCS 裡打開，直接用 MCP 的 `buildProject` 比較不容易指錯 workspace。
 
+### 沒開 IDE 時第一次建置（2026-10-12 實測）
+
+新專案資料夾還沒有 `Debug/makefile`，`ccs_build` 不能用。下面兩行用一個用完即丟的 workspace，不動使用者 IDE 的 workspace：
+
+```bat
+ccs-server-cli.bat -noSplash -workspace <暫存ws> -application com.ti.ccs.apps.importProject -ccs.location <專案資料夾>
+ccs-server-cli.bat -noSplash -workspace <暫存ws> -application com.ti.ccs.apps.buildProject -ccs.projects <專案名>
+```
+
+- `importProject` 只給 `-ccs.location` 時是**就地匯入**，不會複製。輸出會列出 Name、Target、Location 與 ccxml。
+- `buildProject` 在專案資料夾裡產生 `Debug/makefile` 與 `.out`。之後就用 `ccs_build`。
+- 實例：`Timer_lab/TIMER0_EX` 這樣建置，0 errors、0 warnings。
+
 ## CCS Scripting
 
 新的除錯腳本。文件在 `C:\ti\ccs2101\ccs\scripting\docs`，範例在 `C:\ti\ccs2101\ccs\scripting\examples`。

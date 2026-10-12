@@ -20,11 +20,13 @@
 
 ## 腳位
 
-| 信號    | 晶片腳    | 開發板               |
-| ----- | ------ | ----------------- |
-| GPIO0 | Pin 80 | header J8，腳位編號 80 |
+| 信號    | 封裝腳（100-pin PZ） | 開發板接頭（講義 pin map）     |
+| ----- | --------------- | -------------------- |
+| GPIO0 | 79              | BoosterPack J8，編號 80 |
 
-第 12 頁圖上寫 GPIO0 / Pin 80。上一個 GPIO 實驗（`Oscilloscope_read/STATUS.md`）已在板上量到 J8 pin 80 就是 GPIO0。`LLM_WIKI/board-pins.md` 說不要用 Pin 80，與實測矛盾；以實測為準。
+第 12 頁圖上把「Pin 80」畫在晶片框旁，但 80 不是封裝腳號（精簡版 Table 4-1：GPIO0 是 pin 79）。它是 GPIO 講義第 32 頁 pin map 的接頭編號（J8、80）。上一個 GPIO 實驗在 2026-10-07 照這個位置接探棒，量到的就是 GPIO0（`Oscilloscope_read/STATUS.md`）。
+
+注意：TI 使用說明 SPRUII7B Rev B 的 Figure 3 把同一個位置編成 **60**，它的「80」是同一排另一腳 **GND**（J6／J8 標示勘誤）。照講義標的位置接，不要照 Rev B 的數字。對照表見 `LLM_WIKI/board-pins.md` 的「GPIO0／GPIO1／GPIO6 的接頭位置」。
 
 ## 計算（第 7 頁）
 
@@ -143,8 +145,8 @@ interrupt void TIMER0_ISR(void)
    C:\ti\ccs2101\ccs\eclipse\ccs-server-cli.bat -noSplash -workspace <暫存ws> -application com.ti.ccs.apps.buildProject -ccs.projects TIMER0_EX
    ```
    或在 CCS IDE 匯入 `Timer_lab/TIMER0_EX` 後 Build。
-2. 之後：`ccs_build(project="<repo 絕對路徑>/Timer_lab/TIMER0_EX")`，再 `ccs_map_check(project=同上, mode="ram")`。`ccs_build` 內建的 map 檢查會用專案名到 `D:/code/_TI_CCS_no_chinese/TIMER0_EX` 找 `.map` 而報找不到，請以單獨呼叫的 `ccs_map_check` 為準。
-3. 下載執行：先 `ccs_env` 確認 XDS110 沒被佔用，再 `ccs_load(project=同上, run=true)`。備用：在 `TIMER0_EX/tools/` 執行 DSS 腳本 `flash_and_run.js`（輸出檔與 ccxml 是相對 `tools/` 的路徑）。
+2. 之後：`ccs_build(project="TIMER0_EX")`。`JEV_accel/config.json` 已用 `path` 登記這個巢狀專案，回傳裡的 `map` 應是 `ok: true`、`mode: "ram"`。
+3. 下載執行：先 `ccs_env` 確認 XDS110 沒被佔用，再 `ccs_load(project="TIMER0_EX", run=true)`。備用：在 `TIMER0_EX/tools/` 執行 DSS 腳本 `flash_and_run.js`（輸出檔與 ccxml 是相對 `tools/` 的路徑）。
 4. 要交給 IDE 或其他工具用探棒前，先 `ccs_release`。
 
 選用檢查：在除錯器看 `CpuTimer0.InterruptCount`，每秒應增加約 5。
