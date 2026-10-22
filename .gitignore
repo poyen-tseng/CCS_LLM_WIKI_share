@@ -1,2 +1,20 @@
 desktop.ini
 Debug/
+Release/
+.venv/
+.venv_before_migration/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+config.local.json
+.env
+_private_projects/
+_local_archive/
+
+# 講義、範本、報告多為機密，不放進公開倉庫
+*.pdf
+*.ppt
+*.pptx
+*.potx
+*.doc
+*.docx
