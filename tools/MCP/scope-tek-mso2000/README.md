@@ -11,7 +11,7 @@ MCP 伺服器名稱是 `mso`，工具都以 `mso_` 開頭：
 | `mso_run_control`、`mso_autoscale` | run／stop／single／force；`run_state` 用 RIGOL 的字：TD、WAIT、AUTO、STOP |
 | `mso_measure` | 自動量測。RIGOL 名稱（`VPP`、`VTOP`、`PDUT`、`DEL`、`PHAS`…）與 Tek 原名都可；每項約 60–100 ms |
 | `mso_capture` | 波形 CSV。`SCREEN` 約 5000 點，`FULL` 整筆 125 k／1 M 點 |
-| `mso_screenshot` | 白底 PNG。需要在示波器前面板 USB 插隨身碟（存到隨身碟、經 USB 讀回、再刪除） |
+| `mso_screenshot` | 白底（或黑底）PNG，只用 USB 線（`HARDC START`，約 1.7 s），存在 captures |
 | `mso_scpi` | 原始 SCPI。會擋下重置、存取設定、校正、鎖面板、列印、檔案系統與 USB／網路設定指令，也擋 AUTOSET（請用 `mso_autoscale`） |
 
 這台沒有函數產生器。自我測試時，四支探棒都接前面板 PROBE COMP（約 5 V、1 kHz 方波）。探棒沒有 ID 腳，示波器偵測不到衰減比；用 `mso_set_channel(probe_ratio=10)` 設定，並看 `mso_status`。
@@ -50,4 +50,4 @@ claude mcp add mso --scope user -- "$PWD\.venv\Scripts\python.exe" "$PWD\mso_mcp
 
 修改程式後重新連上 `mso`（`/mcp`）；只有依賴改變時才需再跑 `deploy.ps1`。
 
-`.venv/`、`captures/`、`__pycache__/` 與 `config.local.json` 不進 git。截圖與 `mso_status` 的輸出含示波器序號，不要貼進公開文件。
+`.venv/`、`captures/`、`__pycache__/` 與 `config.local.json` 不進 git。`mso_status`／`mso_idn` 的輸出含示波器序號，不要貼進公開文件。

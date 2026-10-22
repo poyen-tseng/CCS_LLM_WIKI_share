@@ -34,6 +34,7 @@ AUTOSET 執行時（約 8 s）示波器不處理 USB。當時一支探測腳本�
 | 一個 `MEASU:IMM:VAL?` | 50–100 ms；工具每項含設定與查錯約 260 ms |
 | `mso_capture` SCREEN（約 5200 點）／FULL（125 k 點） | 約 0.25 s／0.5 s 傳輸；工具含檢查約 2 s／2.6 s |
 | `AUTOS EXEC` | 約 8.5 s |
+| `mso_screenshot` | 約 1.7 s（`HARDC START` 到讀完約 2.3 s 以內） |
 | 不支援的查詢 | 約 2.1 s（沒有 TDS 那種多 5 s 的 abort 等待） |
 | 設定觸發、通道、時基 | 0.5–1.5 s：工具會等 `*OPC?` 再等 0.4 s，見「觸發狀態」 |
 
@@ -50,7 +51,7 @@ AUTOSET 執行時（約 8 s）示波器不處理 USB。當時一支探測腳本�
 | 邊緣 | 斜率只有 `RIS`／`FALL`（`EITH` 回 141）；耦合 `DC`、`HFR`、`LFR`、`NOISE`（沒有 AC） | |
 | 脈寬 | `TRIG:A:PUL:CLA WID`；`TRIG:A:PULSEW:SOU/POL POS|NEG/WHE LESS|MORE|EQ|UNEQ/WID`；門檻就是 `TRIG:A:LEV:CH<n>` | `TRIG:MAI:PUL:WID:…`，極性要全字 |
 | 波形 | `DAT:RESO REDU|FULL`、`DAT:SOU/ENC RIB/WID 1/STAR/STOP`、`WFMO:`（XIN、PT_O、XZE、YMU、YOF、YZE）、`CURV?` | `WFMP:`，2500 點 |
-| 截圖 | `HARDC STAR` 經 USBTMC **不回任何資料**（30 s 逾時；這個韌體只送給印表機）。要插隨身碟：`SAV:IMAG "E:/…"`、`FILES:READF`、`FILES:DELE` | `HARDC STAR` 回 BMP |
+| 截圖 | `HARDC START` 經 USB 直接回 PNG（480 × 234，約 6 KB）。**要寫全字**：`HARDC STAR` 回 `141 Invalid enumeration` 而且不送資料，等到逾時。背景由 `SAV:IMAG:INKS 1|0` 決定（`HARDC:INKS` 沒有作用），格式由 `SAV:IMAG:FILEF PNG` 決定 | `HARDC STAR` 回 BMP |
 
 錯誤處理和 TDS 相同：`*ESR?` 之後讀 `ALLEV?`，連線時 `HEAD OFF`。
 
@@ -90,10 +91,9 @@ AUTOSET 執行時（約 8 s）示波器不處理 USB。當時一支探測腳本�
 | `mso_capture` | SCREEN 5208 點；FULL 125000 點、62.5 MSa/s，v_pp 與量測一致 |
 | `mso_autoscale` | 8.5 s，USB 沒有卡住。四通道上下分開、10 V/div |
 | `mso_scpi` | `*RST`、`AUTOS EXEC` 被擋；`FOO?` 約 2.1 s 回報 `113 Undefined header` |
-| `mso_screenshot` | 沒插隨身碟時回報需要隨身碟；`HARDC STAR` 經 USB 讀不到資料 |
+| `mso_screenshot` | 只用 USB 線：白底與黑底 PNG 都正確（第一次含連線約 3.7 s，之後約 1.7 s）。原本的 `SAV:IMAG:INKS`／`FILEF` 設定事後還原（測試時先設成 BMP，結束後仍是 BMP） |
 
 ## 尚未做
 
 - 數位通道 D0–D15（`SEL:D<n>`、`D<n>:THR`、邏輯／匯流排觸發）。
-- 隨身碟截圖的實測（程式已寫，未插隨身碟驗證）。
 - 游標工具、`jev-scope` 支援、接 F280049C 的實際訊號。

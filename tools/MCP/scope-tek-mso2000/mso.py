@@ -8,8 +8,8 @@ Differences from the RIGOL / Keysight / TDS2014B drivers that matter (probed on 
   * the run state comes from ACQ:STATE?, TRIG:A:MODe? and ACQ:NUMACQ? increasing.
   * waveforms: DATa:RESOlution REDUced gives ~5000 screen points, FULL the whole 125 k / 1 M record;
     volts = (raw - YOFF) * YMULT + YZERO from the WFMOutpre preamble.
-  * HARDCopy STARt sends nothing over USBTMC on this firmware; a screenshot goes through a USB flash drive
-    in the front port (SAVe:IMAGe to the drive, FILESystem:READFile back, then delete).
+  * a screenshot is HARDCopy START (full word: the abbreviation STAR is rejected with error 141), which
+    returns a PNG over USB; SAVe:IMAGe:INKSaver chooses the white or black background.
   * a short-timeout query sent while AUTOSet runs wedges the USB link until the cable is replugged, so
     autoset waits with one long *OPC?.
   * there is no function generator; PROBE COMP (about 5 V, 1 kHz) is the self-test signal.
@@ -38,7 +38,6 @@ HERE = Path(__file__).resolve().parent
 CAPTURES = HERE / "captures"
 TEK_VID, MSO2014_PID = 0x0699, 0x0377
 INVALID = 9.9e37  # value the scope returns when a measurement cannot be made
-SHOT_FILE = "MCPSHOT.PNG"  # temporary screenshot file on the scope's USB flash drive
 
 # RIGOL-style item names -> MEASU:IMM:TYP argument. Native types pass through unchanged. Firmware v1.39
 # also accepts AREA, BURST, CAREA, CMEAN, NEDGECOUNT, PEDGECOUNT, NPULSECOUNT, PPULSECOUNT (probed
@@ -463,13 +462,9 @@ class MSO2000:
         return val
 
     def screenshot(self, white: bool = True) -> bytes:
-        """PNG of the screen through the USB flash drive in the front port: SAVe:IMAGe to the drive,
-        FILESystem:READFile back over USB, then delete the file. Ink Saver (white background) and the
-        file format are the front-panel save settings too, so the previous values are restored."""
-        if int(float(self.query("FILES:FREES?"))) <= 0:
-            raise ScopeError("screenshot needs a USB flash drive in the scope's front USB port (this firmware "
-                             "sends nothing over USB for HARDCopy STARt)")
-        path = self.query("FILES:CWD?").strip('"').rstrip("/") + "/" + SHOT_FILE
+        """PNG of the screen over USB (480 x 234, about 2.3 s). HARDCopy must be spelled out: "HARDC STAR"
+        is rejected with 141 and nothing is sent. SAVe:IMAGe:INKSaver sets the background (HARDCopy:INKSaver
+        has no effect); it and the file format are front-panel save settings too, so they are restored."""
         old = {"INKS": self.query("SAV:IMAG:INKS?"), "FILEF": self.query("SAV:IMAG:FILEF?")}
         new = {"INKS": "1" if white else "0", "FILEF": "PNG"}
         old_timeout = self.inst.timeout
@@ -478,20 +473,16 @@ class MSO2000:
                 if old[key] != value:
                     self.write(f"SAV:IMAG:{key} {value}")
             self.inst.timeout = 30000
-            self.write(f'SAV:IMAG "{path}"', check=False)
-            self.wait_idle(30.0)
-            self.check_error(f"SAV:IMAG {path}")
-            self.inst.write(f'FILES:READF "{path}"')
+            self.inst.write("HARDC START")
             data = self.inst.read_raw()
         finally:
             self.inst.timeout = old_timeout
             for key, value in old.items():
                 if value != new[key]:
                     self.write(f"SAV:IMAG:{key} {value}")
-        self.write(f'FILES:DELE "{path}"')
         start = data.find(b"\x89PNG")
         if start < 0:
-            raise ScopeError(f"FILES:READF did not return a PNG ({len(data)} bytes: {data[:32]!r})")
+            raise ScopeError(f"HARDC START did not return a PNG ({len(data)} bytes: {data[:32]!r})")
         return data[start:]
 
     def waveform(self, source: str | int = "CH1", mode: str = "SCREEN", max_points: int | None = None,

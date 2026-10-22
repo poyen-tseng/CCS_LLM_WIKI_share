@@ -25,8 +25,8 @@ server = MCPServer(
         "mso_set_channel offset_v_center puts that voltage at the center line (CH<n>:OFFSet). Voltages are "
         "probe-corrected: the probes have no ID pin, so check each channel's probe ratio in mso_status. "
         "There is no function generator; the front-panel PROBE COMP terminal (about 5 V, 1 kHz square) is "
-        "the self-test signal. Screenshots need a USB flash drive in the scope's front port. Waveform CSVs "
-        "and screenshots are saved under the captures folder. Never send AUTOSET through mso_scpi: a query "
+        "the self-test signal. Screenshots are white-background PNGs over USB; they and waveform CSVs are "
+        "saved under the captures folder. Never send AUTOSET through mso_scpi: a query "
         "that times out while it runs wedges the USB link until the cable is replugged."
     ),
 )
@@ -112,9 +112,8 @@ def mso_status() -> dict:
 
 @server.tool()
 def mso_screenshot(white_background: bool = True) -> list:
-    """Capture the screen as a PNG (white background by default, for reports; also saved to captures).
-    Needs a USB flash drive in the scope's front USB port: the image is saved there, read back over USB and
-    deleted. white_background=false gives the normal black screen."""
+    """Capture the screen as a PNG over USB (480 x 234, about 2.5 s; white background by default, for
+    reports; also saved to captures). white_background=false gives the normal black screen."""
     png = _call(lambda s: s.screenshot(white_background))
     path = CAPTURES / f"{_stamp()}_screen.png"
     path.parent.mkdir(parents=True, exist_ok=True)
