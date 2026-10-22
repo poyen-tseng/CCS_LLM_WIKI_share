@@ -30,6 +30,7 @@
 | [scope-network-setup.md](scope-network-setup.md) | 人要接示波器網路線、設定電腦與兩台示波器的 IP／DNS、驗證連線或換機 |
 | [timer-flow-performance.md](timer-flow-performance.md) | 用 Timer0 與 RIGOL 驗證完整流程、重現加速比較、查 PDUT 單位與重連影響 |
 | [keysight-scope.md](keysight-scope.md) | 要用 LAN 控制 Keysight DSO-X 4034A：SCPI 差異、Demo 自我測試、游標、等觸發時不能讀資料 |
+| [tek-scope.md](tek-scope.md) | 要用 USB 控制 Tektronix TDS2014B：WinUSB 驅動、SCPI 差異、可用量測、脈寬觸發、速度 |
 | [boundaries.md](boundaries.md) | 想拆 CCS 執行檔或 DLL 之前 |
 | [cloud-read-log.md](cloud-read-log.md) | 要讀雲端課程資料夾之前 |
 

@@ -6,6 +6,7 @@
 | -------------------------------------------------- | ------------------------------------------------ |
 | [scope-rigol-mso5000](scope-rigol-mso5000)         | 經區域網路控制 RIGOL MSO5000 示波器（MCP `scope`）           |
 | [scope-keysight-dsox4000](scope-keysight-dsox4000) | 經區域網路控制 Keysight DSO-X 4034A 示波器（MCP `keysight`） |
+| [scope-tek-tds2000b](scope-tek-tds2000b) | 經 USB 控制 Tektronix TDS2014B 示波器（MCP `tek`；WinUSB 驅動見子夾 README） |
 
 接上示波器後的速度實驗在 [scope-speed-experiments.md](scope-speed-experiments.md)。
 

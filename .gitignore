@@ -11,6 +11,12 @@ config.local.json
 _private_projects/
 _local_archive/
 
+# 個資：本機路徑、帳號、儀器序號會出現在這些檔案裡
+.claude/settings.local.json
+*.local.json
+captures/
+*_linkInfo.xml
+
 # 講義、範本、報告多為機密，不放進公開倉庫
 *.pdf
 *.ppt
