@@ -31,6 +31,7 @@
 | [timer-flow-performance.md](timer-flow-performance.md) | 用 Timer0 與 RIGOL 驗證完整流程、重現加速比較、查 PDUT 單位與重連影響 |
 | [keysight-scope.md](keysight-scope.md) | 要用 LAN 控制 Keysight DSO-X 4034A：SCPI 差異、Demo 自我測試、游標、等觸發時不能讀資料 |
 | [tek-scope.md](tek-scope.md) | 要用 USB 控制 Tektronix TDS2014B：WinUSB 驅動、SCPI 差異、可用量測、脈寬觸發、速度 |
+| [mso2000-scope.md](mso2000-scope.md) | 要用 USB 控制 Tektronix MSO2014：USB 卡住的原因與避免、SCPI 差異、量測項目、改設定後的觸發判斷、截圖要隨身碟 |
 | [boundaries.md](boundaries.md) | 想拆 CCS 執行檔或 DLL 之前 |
 | [cloud-read-log.md](cloud-read-log.md) | 要讀雲端課程資料夾之前 |
 
