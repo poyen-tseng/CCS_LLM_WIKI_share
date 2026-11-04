@@ -1,5 +1,7 @@
 # Timer0 完整流程加速：RIGOL 實測
 
+> 2026-11-03 在 Tektronix TDS2014B（USB，GPIO0 接 CH2）上用同一支 `bench/timer_flow.py --channel CH2` 重跑：baseline 33.199 s → optimized 21.015 s（5＋5 次全過，減少 36.7%）。條件與差異見 [tek-scope.md](tek-scope.md#timer-流程baseline-vs-optimized)。下文是 RIGOL 的紀錄。
+
 2026-10-13 使用 LAUNCHXL-F280049C 與 RIGOL MSO5104，完成 Timer0 計時驗收並比較相同工作的兩種工具流程。專案規格見 [Timer TASK](../../projects/Timer_lab/TASK.md)，進度見 [STATUS](../../projects/Timer_lab/STATUS.md)。回到 [Wiki 索引](README.md)。
 
 ## 條件與驗收

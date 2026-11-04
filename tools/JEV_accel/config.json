@@ -1,6 +1,7 @@
 {
   "rigol_mso_dir": "../MCP/scope-rigol-mso5000",
   "keysight_dsox_dir": "../MCP/scope-keysight-dsox4000",
+  "tek_tds_dir": "../MCP/scope-tek-tds2000b",
   "scope": {
     "model": "keysight",
     "bind": "192.168.137.1",
@@ -12,6 +13,10 @@
     "keysight": {
       "addr": "192.168.137.60",
       "port": 5025
+    },
+    "tek": {
+      "resource": "auto",
+      "timeout_ms": 5000
     }
   },
   "jev": {
@@ -60,6 +65,20 @@
       "open_rows": 80,
       "closed_rows": 10,
       "wiki_rows": 40
+    },
+    "tek": {
+      "kind": "tek_graticule",
+      "x0": 13,
+      "x1": 257,
+      "y0": 13,
+      "y1": 212,
+      "text_min": 180,
+      "text_spread": 25,
+      "min_px": 4,
+      "open_rows": 6,
+      "closed_rows": 2,
+      "wiki_rows": 4,
+      "in_frame": false
     }
   },
   "diagnose": {

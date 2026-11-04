@@ -2,7 +2,7 @@
 
 用 USB 控制 Tektronix TDS2014B（4 通道、100 MHz、每筆 2500 點，韌體 `FV:v22.01`）。下面的規則都來自 2026-10-22 的實測：四支 10:1 探棒都接前面板 PROBE COMP（約 5 V、1 kHz 方波），沒有接 F280049C。MCP 伺服器見 [tools/MCP/scope-tek-tds2000b](../../tools/MCP/scope-tek-tds2000b/README.md)。
 
-這台沒有函數產生器，也沒有 LAN。`jev-scope`（[jev.md](jev.md)）目前只支援 RIGOL 與 Keysight，還不能用在這台。
+這台沒有函數產生器，也沒有 LAN。`jev-scope`（[jev.md](jev.md)）自 2026-11-03 起支援這台（`scope.model = "tek"`），見下方 [jev-scope 加速模組](#jev-scope-加速模組tek2026-11-03)。
 
 回到 [README.md](README.md)。RIGOL、Keysight 的對應規則見 [rigol-scope.md](rigol-scope.md)、[keysight-scope.md](keysight-scope.md)。
 
@@ -97,8 +97,78 @@ NORM 模式等不到觸發時（例如準位 8 V），`tek_measure` 與 `tek_cap
 
 脈衝寬度的 `WHEN` 參數：`EQ`／`NOTE`（在／不在設定值 ±5 % 內）、`INS`（比設定窄）、`OUT`（比設定寬）。`LESS`、`MORE` 不接受。極性要寫全字 `POSITIVE`／`NEGATIVE`（`POS`、`POSI` 都會回 102）。
 
+## jev-scope 加速模組（tek，2026-11-03）
+
+`tools/JEV_accel` 以 `SCOPE_MODEL=tek`（或 `config.local.json` 的 `{"scope": {"model": "tek"}}`）使用這台。程式在 `scope_io.py` 的 `TekDialect`／`TekScope`，USB 存取重用 `tools/MCP/scope-tek-tds2000b/tek.py`。JEV `.venv` 要另裝 `pip install -e ".[tek]"`（PyVISA、PyVISA-py、pyusb、libusb-package，版本與 MCP 相同）。通道寫 `CH2` 或 `CHAN2` 都可以。
+
+**同一時間只有一個程序能開這台的 USB。** `tek` MCP 一旦連過就一直占著；JEV 開不了時，先結束那個 MCP 的會話。
+
+實測（F280049C `TIMER0_EX`，GPIO0 → J8 Pin 80 → CH2 10X 探棒）得到、並已寫進程式的規則：
+
+| 項目 | 實測 | JEV 的處理 |
+| --- | --- | --- |
+| offset 換算 | 中心電壓 = −`CH<n>:POS` × V/div；JEV 規則的 offset = −中心電壓 | `position = offset ÷ V/div`。`TekDialect.cmd_offset` 需要當時的 V/div，呼叫端都會傳 |
+| 位置與觸發準位的步進 | `CH2:POS -1.65` 讀回 `-1.64`（0.04 格）；觸發準位 0.02 格（1 V/div 時 0.02 V；1.65 V 讀回 1.64 V） | 讀回比對容許 0.021 |
+| V/div | 0.6、0.7、1.5 等細調值直接接受 | 沒有 vernier 指令（回空字串，呼叫端會略過） |
+| 時基 | 1-2.5-5 序列，5 ns～50 s/div；`2e-4` 變成 `2.5e-4`，`2e-9` 變成 `5e-9` | `cmd_tdiv` 先往上取到 1-2.5-5 |
+| 波形 `CURV?` | int8，每格 25 碼，螢幕是 ±100（±4 格）。置中的 0–3.3 V 是 −41～43；0 V 在螢幕下方 0.5 格時讀 −112，電壓仍正確（ADC 涵蓋約 ±5.1 格）；超過時飽和在 +127 | `raw + 128` 轉成 0–255，另外把 \|碼\| ≥ 99（碰到螢幕上下緣）設成 0／255。所以規則的 `clipped`（≤3／≥252）代表「截圖上被切掉」，不只是 ADC 飽和 |
+| VTOP／VBASE | 韌體沒有這兩項 | 從同一筆 2500 點紀錄取：高於／低於極值中點的樣本中位數（忽略過衝）。VMAX／VMIN／VPP 也從紀錄算，一次 `CURV?` 約 0.5 s，取代每項約 0.65–1.1 s 的 `MEASU:IMM` |
+| PDUT | 韌體沒有 | `PWI ÷ PERI × 100`，單位是 %（RIGOL 回的是比例，`timer_flow` 只對 RIGOL 乘 100） |
+| NORM 等觸發 | 2.5 Hz 方波每 0.4 s 才觸發一次 | `run_state` 判 WAIT 的觀察窗至少 0.6 s（100 ms/div 時 2.25 s），否則跑著的 Timer 訊號會被當成 WAIT |
+| diagnose 偷看電平 | 100 ms/div 以上切 AUTO 會進 SCAN 捲動，半滿的紀錄讀到 VMAX 3.36／VMIN −3.48 V，建議出錯誤的 `TRIG:MAI:LEV -0.060` | 100 ms/div 以上改用 `TRIG FORC` 擷取一筆完整紀錄（不用還原）；較快時基仍暫切 AUTO，結束時切回 NORM |
+| autoframe edge | 粗調 250 µs/div 量到 VMAX−VMIN 3.36 V；換到 250 ns/div 後邊緣過衝讓擺幅變 3.76 V，0.5 V/div 時碰到螢幕邊緣 | 套用計畫後在新時基再讀一次，截斷或超過 7.6 格就放大一級 V/div（例：0.5 → 0.6），中心不變。只對 `tek` 啟用 |
+| 選單 | 側選單在格線右邊自己的欄位（x 262–319），不會蓋到波形；SCPI 無法關閉選單或訊息框，也沒有 `MESS:` 指令 | `menu.kind = "tek_graticule"`：先遮掉格線固定圖樣（x%5==0、y%25==12、中心軸、外框刻度），再依背景亮度數格線區的中性文字／框線列（原生白底 `HARDC:INKS ON` 數深色中性列，黑底 `INKS OFF` 數亮白列）。實際畫面 0 列；合成的訊息框測試為開。`menu.in_frame=false`：`check_frame` 不截圖（一張 8.5 s），疊圖檢查交給 `jev_menu_visible` 或最後的報告截圖 |
+| 量測疊圖 | `MEASU:IMM` 不會畫在螢幕上 | `clear_meas = None` |
+| 每次寫入 | 每個寫入 0.08–0.64 s，值沒變也一樣（`CH2:COUP DC` 0.64 s、`TRIG:MAI:EDGE:COUP DC` 0.54 s）；查詢約 0.06 s | `TekScope.ensure()` 先讀，只寫不同的設定 |
+| 長的串接指令 | 一個訊息串 18 個指令後 USB 卡死，連 `*IDN?` 都逾時 | 不串接。卡死時用 USBTMC 類別請求 `INITIATE_CLEAR`（bRequest 5，再以 6 查到完成）就能恢復，不必重開機；pyvisa-py 沒有 device clear |
+| 連續截圖与原生白底 | 同一個 USB 會話緊接第二次 `HARDC STAR`，有一次讀取逾時；黑底截圖若做 RGB 反相會把深藍外框 `(0,0,170)` 變成亮黃外框 `(255,255,85)`、CH2 青色變成紅色 | `TekScope.screenshot_bmp(white=True)` 預設使用硬體原生白底（`HARDC:INKS ON`，外框全白、CH1 橘黃、CH2 青色），`timer_flow.py` 直接存檔、不做 `ImageOps.invert`；逾時時重開會話再試一次 |
+
+`diagnose` 的 `fix` 會改寫成這台的語法（`CH2:PRO 10`、`TRIG:MAI:LEV 1.680`、`TRIG:MAI:MOD NORM` + `ACQ:STOPA SEQ` + `ACQ:STATE RUN`）。`autoframe` 不改觸發來源；量 CH2 前先把 `TRIG:MAI:EDGE:SOU` 設成 CH2。
+
+### 實機驗證（2026-11-03）
+
+條件：LAUNCHXL-F280049C 以 `ccs-load TIMER0_EX` 載入 RAM 執行；CH2 10X 探棒接 J8 Pin 80（GPIO0，2.5 Hz 方波）；CH1 接 J8 Pin 79（GPIO1），本次未使用。每一步都是新的 CLI 程序（等同一次 agent 工具呼叫），`--jev off`。原始紀錄在 `tools/JEV_accel/results/tek_hw_20261103_v2/hw_log.json`（不進 Git）。
+
+| 注入 | 結果 | 耗時 |
+| --- | --- | --- |
+| `pytest -m hw`（SCOPE_MODEL=tek） | 3/3 通過 | 24 s |
+| CH2 觸發 NORM、準位 5 V → `check-frame --view period` | `diagnose`（WAIT，不讀舊資料） | 6.7 s |
+| `diagnose --level-set 5` | `trig_level_out_of_range`，`fix: TRIG:MAI:LEV 1.680`；之後觸發模式讀回 `NORMAL` | 6.6 s |
+| `CH2:PRO 1` → `diagnose` | `probe_ratio`，`fix: CH2:PRO 10` | 6.5 s |
+| 起點：探棒 1×、0.2 V/div、位置 +3 格、1 µs/div → `autoframe --channel CH2` | 先改探棒 → 粗調 → 計畫 0.5 V/div → 驗證放大到 0.6 V/div、`CH2:POS -2.76`、5 ns/div；接著 `check-frame` 回 `ready=true`（center_err 0.08 格、edge 0.23 格） | 11.8 s |
+| 位置 +1 格 → `check-frame` → `--apply` → `check-frame` | `fix_offset`（clipped，提示重新取景）→ apply 走 autoframe → `ready=true` | 6.6 s／12.8 s／6.4 s |
+| Timer 設定、單次擷取 → `check-frame --view period` | `ready=true`，2.5 個週期、center_err 0.04 格 | 5.9 s |
+| 0.2 V/div、中心 1.5 V（截斷）→ 同上 | `ready=false`、`clipped=true`；韌體在截斷時拒絕 PERI（9.9E37），所以標籤是 `diagnose`，並附「截斷、恢復已知垂直設定」提示 | 5.7 s |
+| NORM 連續執行（100 ms/div）→ 同上 | `ready=true`，沒有誤判 WAIT | 7.0 s |
+| `menu`、`menu --hide` | `visible=false`（0 列）、`hide_supported=false`，沒有送任何按鍵 | 9.6 s |
+
+第一輪（`tek_hw_20261103/`）抓到兩個問題並已修正：100 ms/div 下 diagnose 建議 `-0.060 V`（SCAN 半滿紀錄），以及 autoframe 後因過衝而截斷、`--apply` 不收斂。
+
+結束時把 CH2、時基、觸發設定還原成開始前的狀態，與開始前的 `tek_status` 比對沒有差異；`HARDC` 設定維持 INKS ON、JPEG。
+
+### Timer 流程（baseline vs optimized）
+
+`bench/timer_flow.py --mode baseline|optimized --runs 5 --channel CH2`，`SCOPE_MODEL=tek`。每次都含增量建置、RAM 載入與校驗、設定與讀回、新的單次擷取（NORM、100 ms/div）、period 畫面閘門、七項量測和最終截圖。兩批各 5 次全部通過驗收（頻率、週期、高低脈寬 ±1%，PDUT 49–51%）。
+
+| 項目（5 次中位數） | baseline | optimized |
+| --- | --- | --- |
+| 完整流程 | 33.199 s（32.861–33.873） | **21.015 s**（20.941–21.556） |
+| 建置／載入 | 0.079／1.981 s | 0.085／1.982 s |
+| 設定與讀回 | 6.520 s | 3.559 s |
+| 單次擷取 | 2.083 s | 1.756 s |
+| 畫面檢查 | 4.312 s | 2.790 s |
+| 七項量測 | 4.162 s | 1.524 s |
+| 最終截圖與核對 | 8.143 s | 8.142 s |
+| Scope 連線數 | 5 | 1 |
+| 明確等待 | 3.65 s | 1.50 s |
+
+中位數加速 **1.58 倍**，耗時減少 **36.7%**。optimized 的差別：同一條 USB 連線（每次開啟約 1.2 s）、設定只寫有變的（`ensure`）、STOP 後不再等 1.5 s、PER／VTOP／VBASE 沿用畫面檢查時同一筆凍結紀錄的值、PDUT 由同一筆的 PWID／PER 算（不再量兩次）。建置、載入、硬體擷取和 8.1 s 的 hardcopy 沒有變快。量測值：FREQ 2.50000–2.50003 Hz、PER 0.39999–0.40000 s、PWID 0.20001 s、NWID 0.19998–0.19999 s、PDUT 50.002–50.003 %、VTOP 3.32 V、VBASE 0.04 V。`scope_commands` 計數不含 `TekScope.measure` 內部直接送的 USB 指令，所以兩邊不能直接比指令數。
+
+原始資料：`tools/JEV_accel/results/tek_timer_baseline_20261103/`、`tek_timer_optimized_20261103/`、`tek_timer_comparison_20261103.json`。報告截圖一律使用預設的硬體原生白底（`HARDC:INKS ON`、`white=True`、`tek_screenshot(white_background=True)`），禁止對黑底截圖做 `ImageOps.invert` 反相。
+
 ## 尚未做
 
 - 游標（`CURS:`）工具；Keysight 的 `ks_markers` 在這台沒有對應的 MCP 工具。
-- 讓 `jev-scope` 支援這台。
-- 接 F280049C 的實際訊號。
+- 選單偵測的「開啟」狀態只用合成影像驗證：沒有 SCPI 能在畫面上叫出訊息框，需要有人按 HELP 等鍵時再補一張真實截圖校準。
+- `TIMER_HW`（CH1 100 Hz、CH2 1 kHz ISR 脈衝）還沒用 JEV 量過。
+- `autoframe` 的過衝驗證只在 `tek` 啟用；RIGOL／Keysight 是否也需要，要在那兩台上實測。

@@ -5,12 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jev_accel"
 version = "0.1.0"
-description = "Rule + Jev decision gates for agents driving a TI F280049C LaunchPad and a lab scope (Keysight DSO-X 4034A or RIGOL MSO5104)"
+description = "Rule + Jev decision gates for agents driving a TI F280049C LaunchPad and a lab scope (Keysight DSO-X 4034A, RIGOL MSO5104 or Tektronix TDS2014B)"
 requires-python = ">=3.11"
 dependencies = ["typesafe-sdk==0.7.2", "mcp==2.3.0", "numpy>=2", "pillow>=10"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+# Tektronix TDS2014B over USB (scope.model "tek"), same pins as tools/MCP/scope-tek-tds2000b
+tek = ["PyVISA==1.16.2", "PyVISA-py==0.8.1", "pyusb==1.3.1", "libusb-package==1.0.30.0"]
 
 [project.scripts]
 jev-accel = "jev_accel.cli:main"
@@ -22,5 +24,5 @@ where = ["src"]
 testpaths = ["tests"]
 markers = [
     "jev: calls the TypeSafe Jev API (needs TYPESAFE_API_KEY)",
-    "hw: needs the configured scope (scope.model) reachable on the LAN",
+    "hw: needs the configured scope (scope.model) reachable on the LAN (tek: on USB)",
 ]

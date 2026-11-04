@@ -1,4 +1,4 @@
-# JEV_accel：用 L0 規則加 Jev 加速 TI F280049C＋示波器（Keysight DSO-X 4034A 或 RIGOL MSO5104）的操作
+# JEV_accel：用 L0 規則加 Jev 加速 TI F280049C＋示波器（Keysight DSO-X 4034A、RIGOL MSO5104 或 Tektronix TDS2014B）的操作
 
 這個專案提供示波器 A–E 判斷工具，並加上 CCS 的建置、燒錄與探針判斷。用法有三種：Python 套件、CLI、MCP server（`jev-scope`、`jev-ccs`）。
 
@@ -25,7 +25,7 @@
 | A 截圖驗收 | `check-frame [--view edge\|delay\|period] [--min-periods 2] [--apply]` | `jev_check_frame` | `ready`、`next_fix`（見下方）、`scpi`、`metrics` |
 | B 無觸發診斷 | `diagnose [--level-set V] [--pc 0x..]` | `jev_diagnose_capture` | `root_cause`（見下方）、`fix`、`fix_is_software` |
 | C 燒錄狀態 | `flash-state <log> [--expected LO HI --measured X] [--expectation 文字]` | `jev_flash_state` | `state`（見下方）、`next_step` |
-| D 側選單 | `menu [--hide]` | `jev_menu_visible` | `visible`；RIGOL：`--hide` 只有在選單開著時才按 MOFF。Keysight：偵測格線上的對話框，`hide_supported=false` |
+| D 側選單 | `menu [--hide]` | `jev_menu_visible` | `visible`；RIGOL：`--hide` 只有在選單開著時才按 MOFF。Keysight：偵測格線上的對話框，`hide_supported=false`。TDS2014B：偵測格線上的訊息框（側選單在自己的欄位，不算），`hide_supported=false` |
 | E 自動取景 | `autoframe [--mode edge\|delay --delay s] [--dry-run]` | `jev_autoframe` | 設定 probe、V/div、offset、觸發準位、時基，並讀回確認（只用規則） |
 
 各工具的可能回傳值：
@@ -50,7 +50,7 @@ cd D:\code\_TI_CCS_no_chinese\CCS_LLM_WIKI_share\tools\JEV_accel
 
 ## 安裝與設定
 
-Timer0 的 RIGOL 完整流程入口是 `bench/timer_flow.py --mode baseline|optimized --runs 5`，使用本目錄 `.venv` 執行。2026-10-13 兩種流程各 5 次通過，中位數 11.628 → 9.376 秒（耗時減少 19.37%）。條件、電壓波動限制、PDUT 單位、原始資料位置及新 `read_var` 操作見 [Timer 流程加速 Wiki](../../docs/wiki/timer-flow-performance.md)。
+Timer0 的完整流程入口是 `bench/timer_flow.py --mode baseline|optimized --runs 5 [--channel CH2]`，使用本目錄 `.venv` 執行。RIGOL（2026-10-13）兩種流程各 5 次通過，中位數 11.628 → 9.376 秒（耗時減少 19.37%）。Tektronix TDS2014B（2026-11-03，`SCOPE_MODEL=tek`、GPIO0 接 CH2）各 5 次通過，中位數 33.199 → 21.015 秒（耗時減少 36.7%），見 [tek-scope.md](../../docs/wiki/tek-scope.md#timer-流程baseline-vs-optimized)。條件、電壓波動限制、PDUT 單位、原始資料位置及新 `read_var` 操作見 [Timer 流程加速 Wiki](../../docs/wiki/timer-flow-performance.md)。
 
 `period` 檢查至少兩個週期，保留 ms 級時基，不以第一個邊緣置中或 ns 上升時間驗收。RIGOL 的 `apply=true` 關選單後只重查選單影像，避免量測查詢再次開啟選單。`edge`／`delay` 行為保留。
 
@@ -61,11 +61,12 @@ setx TYPESAFE_API_KEY "<你的 key>"   # 設定後重開終端機、Cursor、Cla
 ```
 
 - **`config.json`** 裡可以調：
-  - `scope.model`：`keysight`（目前）或 `rigol`。`scope.keysight`／`scope.rigol` 各有位址與埠，`menu.keysight`／`menu.rigol` 各有選單門檻；`config.py` 依型號展開，其他程式照舊讀 `cfg["scope"]["addr"]` 與 `cfg["menu"]`。環境變數 `SCOPE_MODEL` 可以覆寫。
+  - `scope.model`：`keysight`（預設）、`rigol` 或 `tek`（Tektronix TDS2014B，USB；先 `pip install -e ".[tek]"`）。`scope.keysight`／`scope.rigol` 各有位址與埠，`scope.tek` 是 `resource`（`auto` 依 VID／PID 找）與 `timeout_ms`；`menu.keysight`／`menu.rigol`／`menu.tek` 各有選單門檻；`config.py` 依型號展開，其他程式照舊讀 `cfg["scope"]["addr"]` 與 `cfg["menu"]`。環境變數 `SCOPE_MODEL` 可以覆寫。
   - `rigol_mso_dir`：預設 `../MCP/scope-rigol-mso5000`，重用該目錄的 `tools/scope_lan.py`，它會 bind 192.168.137.1，避免走 Wi-Fi。
   - `keysight_dsox_dir`：預設 `../MCP/scope-keysight-dsox4000`，重用該目錄的 `tools/ks_lan.py`（5025 port，同樣 bind 192.168.137.1）。
   - 上述後端路徑與 `ccs.projects_root` 的相對路徑均以本工具根目錄解析，不受終端機目前目錄影響；絕對路徑仍支援。公開專案根目錄預設 `../../projects`。
-  - 型號差異集中在 `scope_io.py` 的 `RigolDialect`／`KeysightDialect`：規則層一律用 RIGOL 的 offset 正負號與觸發狀態字彙，Dialect 負責轉成各型號的 SCPI。
+  - `tek_tds_dir`：預設 `../MCP/scope-tek-tds2000b`，重用該目錄的 `tek.py`（pyvisa-py、WinUSB）。同一時間只有一個程序能開這台的 USB，`tek` MCP 連過後會一直占著。
+  - 型號差異集中在 `scope_io.py` 的 `RigolDialect`／`KeysightDialect`／`TekDialect`：規則層一律用 RIGOL 的 offset 正負號與觸發狀態字彙，Dialect 負責轉成各型號的 SCPI。
   - Jev 的 `model`：`jev-latest`（2026-10-15 指向 `jev-1.13.0`）。這是別名，TypeSafe 升版後會自動換到新版本；實際回答的版本記在 `results/decisions.jsonl` 的 `model` 欄，換版後先跑 `bench/replay.py --jev always` 比對。Jev 只收文字與數字；把截圖交給 Jev 的做法試過後已放棄（[JEV_PERFORMANCE.md](JEV_PERFORMANCE.md#截圖判讀jev-114-看圖-vs-opus-55-high2026-10-15)）。
   - 各項門檻。
 - **個人覆寫**放在 `config.local.json`，不進 git。環境變數 `SCOPE_ADDR`、`SCOPE_BIND` 的優先權最高。
@@ -123,6 +124,24 @@ setx TYPESAFE_API_KEY "<你的 key>"   # 設定後重開終端機、Cursor、Cla
 ## 硬體驗證
 
 連不上示波器時，先照 [示波器網路設定](../../docs/wiki/scope-network-setup.md) 檢查電腦與示波器的 IP、DNS、接線與工具設定。舊的 [SCOPE_IP_SETUP.md](SCOPE_IP_SETUP.md) 保留入口與歷史實測紀錄。
+
+### 已執行（2026-11-03，示波器 Tektronix TDS2014B，USB）
+
+F280049C 以 `ccs-load TIMER0_EX` 在 RAM 執行，GPIO0（J8 Pin 80，2.5 Hz 方波）接 CH2 10X 探棒，`SCOPE_MODEL=tek`、`--jev off`，每步一個新 CLI 程序。完整換算規則與數據見 [tek-scope.md](../../docs/wiki/tek-scope.md#jev-scope-加速模組tek2026-11-03)。
+
+| 項目 | 結果 |
+|---|---|
+| `pytest -m "not jev and not hw"` | 98 passed（原 83 項＋`test_tek_backend.py` 15 項） |
+| `pytest -m hw`（tek） | 3/3 通過 |
+| A `check-frame`：NORM 等不到觸發 | `diagnose`，不讀舊紀錄 |
+| B `diagnose --level-set 5`／探棒 1× | `trig_level_out_of_range`（`TRIG:MAI:LEV 1.680`，之後觸發模式回 NORMAL）／`probe_ratio`（`CH2:PRO 10`） |
+| E `autoframe` 從探棒 1×、1 µs/div、偏 3 格開始 | 0.6 V/div、`CH2:POS -2.76`、5 ns/div；接著 `check-frame` 回 `ready=true` |
+| A 位置偏 1 格 → `--apply` | `fix_offset` → autoframe → `ready=true` |
+| A Timer period 畫面（單次、連續 NORM）／截斷 | `ready=true`（2.5 週期）／`ready=false, clipped=true` |
+| D `menu`、`menu --hide` | `visible=false`、沒有送按鍵 |
+| Timer 流程 5＋5 次 | 33.199 → 21.015 s（−36.7%），全部通過驗收 |
+
+**這輪發現的事：** 100 ms/div 以上切 AUTO 會進 SCAN，diagnose 讀到半滿紀錄（改成 `TRIG FORC`）；edge 時基下的過衝讓 autoframe 後截斷（加一次驗證放大 V/div，只對 tek）；2.5 Hz 每 0.4 s 才觸發，WAIT 判定窗至少 0.6 s；每個寫入 0.08–0.64 s（設定只寫有變的）；一則 18 個指令的串接訊息會卡死 USB，USBTMC `INITIATE_CLEAR` 可恢復。
 
 ### 已執行（2026-10-12，示波器 Keysight DSO-X 4034A）
 

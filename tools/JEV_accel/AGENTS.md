@@ -29,10 +29,12 @@
 
 Keysight DSO-X 4034A（`config.json` 的 `scope.model` 是 `keysight`）：NORM sweep 等觸發時，波形與量測查詢會卡住整台示波器，直到有觸發。不要自己送 `:MEAS`／`:WAV` 查詢，先用 `jev_check_frame` 或 `keysight` MCP（它們會先判斷 `run_state`）。卡住時執行 `tools\MCP\scope-keysight-dsox4000\keysight.py recover`。其他差異見 `docs/wiki/keysight-scope.md`。
 
-硬體實測（2026-10-07）得到的規則：
+Tektronix TDS2014B（`scope.model` 是 `tek`，USB）：同一時間只有一個程序能開它的 USB，`tek` MCP 連過就會占著，JEV 開不了時先結束那個會話。位置以格為單位，回傳的 `scpi` 已換算。不要把很多指令串成一個訊息送出（會卡死 USB）。**截圖一律使用預設的原生白底圖**（`HARDC:INKS ON`，`tek_screenshot(white_background=True)` 或 `TekScope.screenshot_bmp(white=True)`），不要對黑底圖做 `ImageOps.invert` 反相（會讓深藍外框變亮黃色、波形變色）。其他差異見 `docs/wiki/tek-scope.md`。
+
+硬體實測（2026-10-07，RIGOL MSO5104）得到的規則：
 - `jev_check_frame` 回傳 `hint`（畫面被截斷）時，不要自己算 offset，直接用 `apply=true` 或 `jev_autoframe` 重新取景。截斷時量到的 VTOP/VBASE 是螢幕邊緣，用它們算出來的數值會讓畫面更糟。
 - 起點設定完全不對時（探棒倍率錯、時基錯），直接呼叫 `jev_autoframe`。它會依序：先改探棒倍率 → 粗調 → 細調。
-- 白底截圖：這台示波器的 `:DISP:DATA?` invert 參數沒有作用，回傳的永遠是黑底。要白底就在截圖後把影像反相（例如 PIL `ImageOps.invert`）。
+- 白底截圖：只有 RIGOL MSO5104 的 `:DISP:DATA?` invert 參數沒有作用（回傳永遠是黑底），才需要在截圖後用 `ImageOps.invert` 反相；Tektronix TDS2014B 與 Keysight 皆直接使用硬體原生白底（`HARDC:INKS ON`／`:HARD:INKS ON`）。
 - 報告截圖前先 `:MEAS:CLE ALL`，再加回需要的量測項目。本工具的量測查詢會在畫面下方留下量測列。
 
 ## 操作 CCS／F280049C 時先問 jev-ccs

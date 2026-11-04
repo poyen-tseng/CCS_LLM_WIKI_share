@@ -1,7 +1,8 @@
 """Timer0 hardware acceptance and matched baseline/optimized workflow timings.
 
-Run from the JEV venv: python bench/timer_flow.py --mode optimized --runs 5
-Requires GPIO0 on RIGOL CH1, 10x probe, GND, and a built TIMER0_EX RAM project.
+Run from the JEV venv: python bench/timer_flow.py --mode optimized --runs 5 [--channel CH2]
+Requires GPIO0 on a 10x probe (RIGOL MSO5104: CHAN1 by default; Tektronix TDS2014B with SCOPE_MODEL=tek:
+pass the probed channel, e.g. --channel CH2), GND, and a built TIMER0_EX RAM project.
 """
 from __future__ import annotations
 
@@ -22,7 +23,7 @@ from PIL import Image, ImageOps
 
 from jev_accel import tools, tools_ccs
 from jev_accel.config import RESULTS, load_config
-from jev_accel.scope_io import open_scope
+from jev_accel.scope_io import dialect_of, open_scope, tek_channel
 from jev_accel.rules import menu as menu_rules
 
 ITEMS = ("FREQ", "PER", "PWID", "NWID", "PDUT", "VTOP", "VBASE")
@@ -30,6 +31,25 @@ SETTINGS = (":CHAN1:DISP ON", ":CHAN1:PROB 10", ":CHAN1:COUP DC", ":CHAN1:VERN O
             ":CHAN1:SCAL 1", ":CHAN1:OFFS -1.65", ":TIM:MAIN:SCAL 0.1", ":TIM:MAIN:OFFS 0",
             ":TRIG:MODE EDGE", ":TRIG:EDGE:SOUR CHAN1", ":TRIG:EDGE:SLOP POS",
             ":TRIG:EDGE:LEV 1.65", ":TRIG:SWE NORM", ":MEAS:CLE ALL")
+# readback targets in readback_queries() order: probe, V/div, offset (Tek: position in div), level, s/div, delay
+TARGETS = (10, 1, -1.65, 1.65, .1, 0)
+IDN_MODEL = {"rigol": "MSO5104", "tek": "TDS 2014B"}
+
+
+def settings(model="rigol", channel="CHAN1"):
+    """The known Timer frame: 1 V/div, 1.65 V at screen center, 100 ms/div, rising edge at 1.65 V, NORM."""
+    if model != "tek":
+        return SETTINGS if channel == "CHAN1" else tuple(c.replace("CHAN1", channel) for c in SETTINGS)
+    ch = tek_channel(channel)
+    # CH<n>:POS is in divisions: -1.65 div * 1 V/div puts 1.65 V at screen center (rule offset -1.65)
+    return (f"SEL:{ch} ON", f'{ch}:YUN "V"', f"{ch}:PRO 10", f"{ch}:COUP DC", f"{ch}:INV OFF", f"{ch}:SCA 1",
+            f"{ch}:POS -1.65", "HOR:MAI:SCA 0.1", "HOR:MAI:POS 0", "ACQ:MOD SAM", "TRIG:MAI:TYP EDGE",
+            f"TRIG:MAI:EDGE:SOU {ch}", "TRIG:MAI:EDGE:SLO RIS", "TRIG:MAI:EDGE:COUP DC", "TRIG:MAI:LEV 1.65",
+            "TRIG:MAI:MOD NORM")
+
+
+def run_cmds(model="rigol"):
+    return ("ACQ:STOPA RUNST", "ACQ:STATE RUN") if model == "tek" else (":RUN",)
 
 
 def acceptance(values):
@@ -47,20 +67,27 @@ def require(ok, message):
 
 
 class Experiment:
-    def __init__(self, mode, output, nodelay=False):
+    def __init__(self, mode, output, nodelay=False, channel=None):
         self.mode, self.output, self.nodelay = mode, Path(output), nodelay
         self.output.mkdir(parents=True, exist_ok=True)
         self.cfg = load_config()
-        require(self.cfg["scope"]["model"] == "rigol", "set SCOPE_MODEL=rigol")
+        self.model = self.cfg["scope"]["model"]
+        require(self.model in IDN_MODEL, "set SCOPE_MODEL=rigol or SCOPE_MODEL=tek")
+        self.channel = channel or "CHAN1"
         self.counts = {"scope_connections": 0, "scope_commands": 0, "ccs_calls": 0, "wait_s": 0.0}
         self.stages = {}
+
+    @property
+    def tek(self):
+        return getattr(self, "model", "rigol") == "tek"
 
     @contextlib.contextmanager
     def scope(self):
         self.counts["scope_connections"] += 1
         with open_scope(self.cfg) as sc:
             sc.consume_block_terminator = self.mode == "optimized"
-            sc.s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, int(self.nodelay))
+            if hasattr(sc, "s"):  # TCP scopes only; the TDS2014B is on USB
+                sc.s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, int(self.nodelay))
             for name in ("q", "w", "block"):
                 method = getattr(sc, name)
                 def counted(*args, _method=method, **kwargs):
@@ -84,22 +111,34 @@ class Experiment:
         finally:
             self.stages[name] = time.perf_counter() - start
 
+    def stopped(self, sc):
+        return sc.q("ACQ:STATE?") == "0" if self.tek else sc.q(":TRIG:STAT?").upper() == "STOP"
+
     def configure(self, sc):
-        for cmd in SETTINGS:
-            sc.w(cmd)
-        sc.w(":RUN")
+        cmds = settings(self.model, self.channel) + run_cmds(self.model)
+        if self.tek and self.mode == "optimized":
+            # a TDS2014B write costs 0.08-0.64 s even for an unchanged value, a query ~0.06 s
+            self.written = sc.ensure(cmds)
+        else:
+            for cmd in cmds:
+                sc.w(cmd)
         # At 100 ms/div fill the entire one-second display with new data.
         self.wait(1.5 if self.mode == "baseline" else 1.0)
-        got = [sc.qf(q) for q in sc.dialect.readback_queries("CHAN1")]
-        require(all(math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-6)
-                    for a, b in zip(got, (10, 1, -1.65, 1.65, .1, 0))), f"settings readback: {got}")
+        got = [sc.qf(q) for q in sc.dialect.readback_queries(self.channel)]
+        # TDS2014B steps: position 0.04 div (-1.65 -> -1.64), trigger level 0.02 div (measured 2026-11-03)
+        tol = .021 if self.tek else 1e-6
+        require(all(math.isclose(a, b, rel_tol=1e-6, abs_tol=tol)
+                    for a, b in zip(got, TARGETS)), f"settings readback: {got}")
+        if self.tek:
+            require(not sc.errors(), "SCPI error after configure")
 
     def capture(self, sc):
-        sc.w(":SING")
+        for cmd in sc.dialect.cmds_single()[-2:] if self.tek else (":SING",):
+            sc.w(cmd)
         self.wait(.05)
         until = time.perf_counter() + 5
         while time.perf_counter() < until:
-            if sc.q(":TRIG:STAT?").upper() == "STOP":
+            if self.stopped(sc):
                 return
             self.wait(.05)
         raise TimeoutError("fresh single capture did not finish in 5 seconds")
@@ -107,7 +146,7 @@ class Experiment:
     def check(self, sc):
         delay = self.cfg["frame"]["settle_s"] if self.mode == "baseline" else 0
         self.wait(delay)
-        self.frame_input = tools.read_frame(sc, view="period")
+        self.frame_input = tools.read_frame(sc, self.channel, view="period")
         out = tools.decide_frame(self.frame_input, cfg=sc.cfg)
         if out['next_fix'] == 'hide_menu':
             sc.w(sc.dialect.hide_menu)
@@ -120,29 +159,48 @@ class Experiment:
 
     def measure(self, sc, frame):
         cached = frame["measurements"] if self.mode == "optimized" else {}
-        values = {k: cached[k] if k in cached else sc.measure(k) for k in ITEMS}
-        # MSO5104 firmware 00.01.03.03.00 reports PDUT as a fraction, not percent.
-        if values['PDUT'] is not None:
+        ch = getattr(self, "channel", "CHAN1")
+        values = {}
+        for k in ITEMS:
+            if k in cached:
+                values[k] = cached[k]
+            elif k == "PDUT" and self.tek and self.mode == "optimized" and values.get("PER"):
+                # same frozen STOP record: PWI / PERI * 100 is what the scope-side PDUT computes too,
+                # without measuring PWI and PERI a second time (~1.3 s)
+                values[k] = values["PWID"] / values["PER"] * 100
+            else:
+                values[k] = sc.measure(k) if ch == "CHAN1" else sc.measure(k, ch)
+        # MSO5104 firmware 00.01.03.03.00 reports PDUT as a fraction, not percent; the TDS2014B value is
+        # computed in percent (PWI / PERI * 100).
+        if values['PDUT'] is not None and dialect_of(sc).name == "rigol":
             values['PDUT_raw'] = values['PDUT']
             values['PDUT'] *= 100
         require(acceptance(values), f"Timer measurement rejected: {values}")
         # Measurement queries add overlays; clear them and recheck the menu before the report screenshot.
-        sc.w(":MEAS:CLE ALL")
+        if dialect_of(sc).clear_meas:  # TDS2014B immediate measurements draw nothing
+            sc.w(dialect_of(sc).clear_meas)
         return values
 
     def screenshot(self, sc, path):
-        require(sc.q(":TRIG:STAT?").upper() == "STOP", "capture changed before screenshot")
+        require(self.stopped(sc), "capture changed before screenshot")
         raw = sc.screenshot_bmp()
         # RIGOL measurement queries reopen Measure even after an earlier menu check.
         rows = menu_rules.stats(menu_rules.bmp_to_array(raw), sc.cfg)['hit_rows']
         if rows > sc.cfg['menu']['open_rows']:
+            require(sc.dialect.hide_menu, f"a box covers the graticule ({rows} rows) and no SCPI closes it")
             sc.w(sc.dialect.hide_menu)
             self.wait(.8)
             raw = sc.screenshot_bmp()
         self.frame_input.menu_rows = menu_rules.stats(menu_rules.bmp_to_array(raw), sc.cfg)['hit_rows']
         require(tools.decide_frame(self.frame_input, cfg=sc.cfg)['ready'], 'final screenshot menu/frame not ready')
         with Image.open(io.BytesIO(raw)) as img:
-            ImageOps.invert(img.convert("RGB")).save(path)
+            # TDS2014B screenshot_bmp(white=True) is already native white background (HARDC:INKS ON);
+            # only RIGOL MSO5104 requires RGB inversion because its :DISP:DATA? ignores invert.
+            (img.convert("RGB") if self.tek else ImageOps.invert(img.convert("RGB"))).save(path)
+        if self.tek:
+            require('TEKTRONIX' in sc.q('*IDN?'), 'hardcopy read misaligned subsequent IDN')
+            require(not sc.errors(), "SCPI error after capture")
+            return
         require('RIGOL' in sc.q('*IDN?'), 'block read misaligned subsequent IDN')
         require(sc.q(":SYST:ERR?").startswith("0,"), "SCPI error after capture")
 
@@ -189,12 +247,15 @@ def main(argv=None):
     p.add_argument("--mode", choices=("baseline", "optimized"), required=True)
     p.add_argument("--runs", type=int, default=5)
     p.add_argument("--nodelay", action="store_true")
+    p.add_argument("--channel", default="CHAN1", help="probed channel, e.g. CHAN1 (RIGOL) or CH2 (TDS2014B)")
     p.add_argument("--output", type=Path)
     a = p.parse_args(argv)
     if a.runs < 1:
         p.error("runs must be positive")
     output = a.output or RESULTS / ('timer_' + time.strftime('%Y%m%d_%H%M%S') + '_' + a.mode)
     e = Experiment(a.mode, output, a.nodelay)
+    e.channel = channel = a.channel
+    model = getattr(e, 'model', None) or e.cfg['scope'].get('model', 'rigol')
     rows = []
     try:
         env = tools_ccs.ccs_env()
@@ -202,10 +263,13 @@ def main(argv=None):
         metadata = {k: env[k] for k in ('probe', 'probe_present', 'tools')}
         program = tools_ccs.project_dir('TIMER0_EX') / 'Debug/TIMER0_EX.out'
         metadata.update(date=datetime.datetime.now().astimezone().isoformat(), scope=e.cfg['scope'],
+                        channel=channel,
                         program_sha256=hashlib.sha256(program.read_bytes()).hexdigest() if program.exists() else None)
-        (output / 'environment.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
         with e.scope() as sc:
-            require('MSO5104' in sc.q('*IDN?'), 'unexpected scope model')
+            idn = sc.q('*IDN?')
+            require(IDN_MODEL.get(model, 'MSO5104') in idn, 'unexpected scope model')
+        metadata['scope_idn'] = idn.split(',')[:2] + idn.split(',')[3:]  # without the serial number
+        (output / 'environment.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
         # Hide only when the JEV menu detector sees an open menu; MOFF is a toggle.
         menu = tools.menu(hide=True, jev_mode='auto')
         (output / 'menu_preflight.json').write_text(json.dumps(menu, indent=2), encoding='utf-8')
@@ -220,9 +284,8 @@ def main(argv=None):
         # Leave the board and scope running normally, and always release the probe.
         try:
             with e.scope() as sc:
-                for cmd in SETTINGS:
+                for cmd in settings(model, channel) + run_cmds(model):
                     sc.w(cmd)
-                sc.w(":RUN")
         finally:
             release = tools_ccs.ccs_release()
             require(release.get("ok"), f"probe release failed: {release}")

@@ -1,6 +1,6 @@
 """Project configuration: config.json at the project root, with SCOPE_MODEL / SCOPE_ADDR / SCOPE_BIND env overrides.
 
-scope.model picks the scope ("rigol" or "keysight"). Per-model blocks are resolved here, so callers keep
+scope.model picks the scope ("rigol", "keysight" or "tek"; tek reads scope.resource instead of addr/port). Per-model blocks are resolved here, so callers keep
 reading cfg["scope"]["addr"/"port"] and cfg["menu"][...] for the active model:
   "scope": {"model": ..., "rigol": {"addr", "port"}, "keysight": {"addr", "port"}, ...}
   "menu":  {"rigol": {...}, "keysight": {...}}
@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "results"
 CAPTURES = ROOT / "captures"
-MODELS = ("rigol", "keysight")
+MODELS = ("rigol", "keysight", "tek")  # tek: Tektronix TDS2014B over USB (USBTMC), no addr/port
 
 
 def _merge(base: dict, extra: dict) -> dict:
@@ -35,7 +35,7 @@ def load_config(model: str | None = None) -> dict:
     if local.exists():
         cfg = _merge(cfg, json.loads(local.read_text(encoding="utf-8")))
     # Repository paths are relative to this tool, independent of the process cwd.
-    for key in ("rigol_mso_dir", "keysight_dsox_dir"):
+    for key in ("rigol_mso_dir", "keysight_dsox_dir", "tek_tds_dir"):
         if key in cfg:
             path = Path(cfg[key])
             cfg[key] = str((path if path.is_absolute() else ROOT / path).resolve())

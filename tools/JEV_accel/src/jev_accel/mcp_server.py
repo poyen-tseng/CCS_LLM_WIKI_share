@@ -16,7 +16,8 @@ from jev_accel import tools  # noqa: E402
 from jev_accel.config import load_config  # noqa: E402
 
 JevMode = Literal["auto", "always", "off"]
-_SCOPE = {"rigol": "RIGOL MSO5104", "keysight": "Keysight DSO-X 4034A"}[load_config()["scope"]["model"]]
+_SCOPE = {"rigol": "RIGOL MSO5104", "keysight": "Keysight DSO-X 4034A",
+          "tek": "Tektronix TDS2014B (USB; channels CH1-CH4, CHANn accepted)"}[load_config()["scope"]["model"]]
 
 server = MCPServer(
     "jev-scope",

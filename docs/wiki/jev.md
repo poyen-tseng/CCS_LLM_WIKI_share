@@ -30,13 +30,15 @@ Timer 這類完整週期量測用 `jev_check_frame(view="period", min_periods=2,
 
 ### 換示波器
 
-`tools/JEV_accel/config.json` 的 `scope.model` 選 `keysight` 或 `rigol`（環境變數 `SCOPE_MODEL` 可以覆寫），位址、埠與選單門檻跟著切換。回傳的 `scpi` 已經是該型號的語法，例如 Keysight 的 offset 是螢幕中心電壓（`:CHAN1:OFFS 1.085`），RIGOL 是 `-1.085`。改完 config 要在 Claude Code 重新連上 `jev-scope`。
+`tools/JEV_accel/config.json` 的 `scope.model` 選 `keysight`、`rigol` 或 `tek`（Tektronix TDS2014B，USB；環境變數 `SCOPE_MODEL` 可以覆寫），位址、埠與選單門檻跟著切換。TDS2014B 的差異（位置以格為單位、int8 波形、只有一個程序能占用 USB）見 [tek-scope.md](tek-scope.md#jev-scope-加速模組tek2026-11-03)。回傳的 `scpi` 已經是該型號的語法，例如 Keysight 的 offset 是螢幕中心電壓（`:CHAN1:OFFS 1.085`），RIGOL 是 `-1.085`。改完 config 要在 Claude Code 重新連上 `jev-scope`。
+
+Tektronix TDS2014B 截圖一律使用預設的**原生白底圖**（`HARDC:INKS ON`，`tek_screenshot(white_background=True)` 或 `TekScope.screenshot_bmp(white=True)`），保留白色外框與原色波形（CH1 橘黃、CH2 青色），不要對黑底圖做 `ImageOps.invert` 反相。
 
 Keysight 在 NORM sweep 等觸發時，量測與波形查詢會卡住整台示波器。`jev_check_frame` 這時不讀資料、直接回 `diagnose`；`jev_diagnose_capture` 與 `jev_autoframe` 會暫時切 AUTO 讀電平再切回來。細節見 [keysight-scope.md](keysight-scope.md)。
 
 ### RIGOL MSO5104
 
-這台 MSO5104 上，`:DISP:DATA?` 的 invert 參數沒有作用，回傳的圖永遠是黑底。報告要白底就在截圖後把影像反相。畫面被截斷時，VTOP／VBASE 是螢幕邊緣，不要拿來自己算 offset；用 `apply=true` 或 `jev_autoframe`。對隱藏通道送量測會把該通道打開。只量已經顯示的通道。
+這台 MSO5104 上，`:DISP:DATA?` 的 invert 參數沒有作用，回傳的圖永遠是黑底。只有這台 MSO5104 才需要在截圖後把影像反相（`ImageOps.invert`）。畫面被截斷時，VTOP／VBASE 是螢幕邊緣，不要拿來自己算 offset；用 `apply=true` 或 `jev_autoframe`。對隱藏通道送量測會把該通道打開。只量已經顯示的通道。
 
 ## CCS
 

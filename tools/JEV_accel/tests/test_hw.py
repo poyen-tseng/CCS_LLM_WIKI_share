@@ -13,7 +13,21 @@ from jev_accel.scope_io import dialect_of, open_scope
 
 
 def _reachable() -> bool:
-    sc = load_config()["scope"]
+    cfg = load_config()
+    sc = cfg["scope"]
+    if sc["model"] == "tek":  # USB: is a TDS2014B enumerated (WinUSB bound)?
+        try:
+            import pyvisa
+            from jev_accel.scope_io import _load_module
+            from pathlib import Path
+            tek = _load_module("tek", Path(cfg["tek_tds_dir"]) / "tek.py", "tek_tds_dir")
+            rm = pyvisa.ResourceManager("@py")
+            try:
+                return any(tek._is_tds(r) for r in rm.list_resources("USB?*INSTR"))
+            finally:
+                rm.close()
+        except Exception:
+            return False
     try:
         with socket.create_connection((sc["addr"], sc["port"]), timeout=1.0):
             return True
@@ -28,7 +42,8 @@ def test_idn_and_block_read_stay_in_sync():
     with open_scope() as s:
         vendors = dialect_of(s).idn_vendors
         assert any(v in s.q("*IDN?").upper() for v in vendors)
-        assert len(s.screenshot_bmp()) > 10_000
+        # the TDS2014B 320x240 screen compresses to ~3.6 kB of PNG; the others send 10+ kB
+        assert len(s.screenshot_bmp()) > (2_000 if dialect_of(s).name == "tek" else 10_000)
         assert any(v in s.q("*IDN?").upper() for v in vendors)  # the block read kept the next reply aligned
 
 
