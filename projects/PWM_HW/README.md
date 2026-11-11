@@ -17,9 +17,42 @@
 - [firmware/PWM_3CH_up_count](firmware/PWM_3CH_up_count)：補測用 Up-Count，OutA／OutB／GPIO2 ISR 標記可同時觀測。
 - [firmware/PWM_3CH_up_down](firmware/PWM_3CH_up_down)：補測用 Up-Down，同樣保留獨立 GPIO2 標記。
 
-## 任務4代表圖
+## 四個任務的實測圖
 
-以下是歷史實測與待確認預覽，並非已核准 PPT。CH2 青色為 OutA，CH4 綠色為 DACOUTA。兩張端點圖使用相同 0 V 位置與 1 V/div；總覽為較早一輪的原生擷取。
+以下均為已公開的原生示波器截圖。任務1～3使用歷史實測，任務4包含後續獨立預覽；圖片與量測資料不代表已核准 PPT。示波器為 TDS2014B，設定與原始數列可從各節證據連結查閱。
+
+### 任務1：200 kHz PWM、20%指令與300 ns死區
+
+CH2 青色為 OutA，CH1 橘色為 OutB。概觀呈現互補輸出；兩張放大圖分別觀察 OutA下降→OutB上升、OutB下降→OutA上升的死區。20%是死區前指令，OutA腳位高脈寬約0.70 µs、duty約14%。
+
+| Up-Count PWM概觀 | OutA↓→OutB↑死區 | OutB↓→OutA↑死區 |
+| --- | --- | --- |
+| ![任務1：Up-Count的OutA與OutB](evidence/evidence/B1_up/V1_part1_overview.png) | ![任務1：OutA下降至OutB上升的死區](evidence/evidence/B1_up/V2a_part1_deadtime_Afall_Brise.png) | ![任務1：OutB下降至OutA上升的死區](evidence/evidence/B1_up/V2b_part1_deadtime_Bfall_Arise.png) |
+
+[概觀與死區量測設定／CSV](evidence/evidence/B1_up)；另一種計數模式的完整資料見 [Up-Down實測](evidence/evidence/B2_updown)。
+
+### 任務2：每4個PWM事件進入中斷並翻轉GPIO
+
+這張圖使用原 `HW_PART=3`：CH2 青色仍是 OutA，CH1 橘色改成 GPIO1 中斷翻轉標記。每個GPIO高／低半週期包含4個PWM週期；PWM約200 kHz、GPIO方波約25 kHz，對應約50 k次/s的ISR翻轉事件。
+
+![任務2：每個GPIO半週期包含4個PWM週期](evidence/evidence/B3_up_isr/V3_part3_isr_overview.png)
+
+[任務2量測設定／CSV](evidence/evidence/B3_up_isr)。GPIO標記含中斷進入後的軟體延遲，不直接等於硬體中斷發生瞬間。
+
+### 任務3：比較Up-Count／Up-Down波形與中斷標記時序
+
+以下為三通道補測版：CH2 青色是 OutA，CH1 橘色是 OutB，CH3 紫色是獨立 GPIO2 ISR標記，三個訊號同時擷取。先比較整體週期關係，再比較GPIO上升緣附近的放大波形。
+
+| 觀察範圍 | Up-Count | Up-Down |
+| --- | --- | --- |
+| PWM／GPIO概觀 | ![任務3：Up-Count三通道概觀](evidence/supplement_20261110_181526/up_count_V3_overview.png) | ![任務3：Up-Down三通道概觀](evidence/supplement_20261110_181526/up_down_V3_overview.png) |
+| GPIO上升緣附近 | ![任務3：Up-Count的PWM與GPIO時序](evidence/supplement_20261110_181526/up_count_V4_rise.png) | ![任務3：Up-Down的PWM與GPIO時序](evidence/supplement_20261110_181526/up_down_V4_rise.png) |
+
+兩模式的GPIO標記相對OutA上升緣相差約500 ns；依波形與計數設定換算到CTR=0後，標記延遲近似相同。這是在比較軟體標記與PWM的相對關係，未量得真正ISR入口。[數值、計算方法與限制](evidence/supplement_20261110_181526/validation_supplement.md)。
+
+### 任務4：PWM duty漸變與DAC三角波
+
+CH2 青色為 OutA，CH4 綠色為 DACOUTA。兩張端點圖使用相同 0 V 位置與 1 V/div；總覽為較早一輪的原生擷取。
 
 | 最高端點 | 最低端點 | DAC 總覽 |
 | --- | --- | --- |
