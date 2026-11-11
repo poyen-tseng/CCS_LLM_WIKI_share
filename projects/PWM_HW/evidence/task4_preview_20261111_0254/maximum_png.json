@@ -1,0 +1,77 @@
+{
+  "path": "evidence\\task4_preview_20261111_0254\\maximum.png",
+  "sha256": "901CE348DC2AEF98332F3F9D6D23F333918AD86AE1F2F0CB7EF9046954A77B23",
+  "gate": "evidence\\task4_preview_20261111_0254\\maximum_gate.json",
+  "settings": {
+    "idn": "TEKTRONIX,TDS 2014B,[IDENTIFIER_REMOVED],CF:91.1CT FV:v22.01",
+    "run_state": "STOP",
+    "timebase": {
+      "scale_s_div": 1e-06,
+      "position_s": 1.1e-05
+    },
+    "acquire": {
+      "mode": "SAMPLE",
+      "averages": 16,
+      "stop_after": "SEQUENCE",
+      "state": "0",
+      "record_points": 2500
+    },
+    "trigger": {
+      "type": "EDGE",
+      "mode": "NORMAL",
+      "level_V": 1.64,
+      "holdoff_s": 5e-07,
+      "trig_state": "SAVE",
+      "run_state": "STOP",
+      "edge_source": "CH1",
+      "edge_slope": "FALL",
+      "edge_coupling": "DC"
+    },
+    "channels": {
+      "CH1": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH2": {
+        "display": true,
+        "scale_V_div": 2.0,
+        "position_div": -0.8,
+        "offset_V_center": 1.6,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH3": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH4": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      }
+    }
+  }
+}

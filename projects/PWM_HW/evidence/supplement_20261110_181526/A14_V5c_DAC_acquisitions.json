@@ -1,0 +1,40 @@
+{
+  "records": [
+    {
+      "i": 1,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:41.485+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_01_20261110_181741_485_CH4.csv"
+    },
+    {
+      "i": 2,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:43.845+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_02_20261110_181743_845_CH4.csv"
+    },
+    {
+      "i": 3,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:46.194+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_03_20261110_181746_194_CH4.csv"
+    },
+    {
+      "i": 4,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:48.563+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_04_20261110_181748_563_CH4.csv"
+    },
+    {
+      "i": 5,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:51.262+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_05_20261110_181751_262_CH4.csv"
+    },
+    {
+      "i": 6,
+      "state": "STOP",
+      "at": "2026-11-10T18:17:53.629+08:00",
+      "CH4": "evidence\\supplement_20261110_181526\\A14_V5c_DAC_raw\\A14_V5c_DAC_06_20261110_181753_629_CH4.csv"
+    }
+  ]
+}

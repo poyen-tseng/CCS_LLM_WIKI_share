@@ -1,0 +1,114 @@
+{
+  "name": "maximum",
+  "frozen_at": "2026-11-11T02:51:55.623224+08:00",
+  "state": "STOP",
+  "settings": {
+    "idn": "TEKTRONIX,TDS 2014B,[IDENTIFIER_REMOVED],CF:91.1CT FV:v22.01",
+    "run_state": "STOP",
+    "timebase": {
+      "scale_s_div": 1e-06,
+      "position_s": 1.1e-05
+    },
+    "acquire": {
+      "mode": "SAMPLE",
+      "averages": 16,
+      "stop_after": "SEQUENCE",
+      "state": "0",
+      "record_points": 2500
+    },
+    "trigger": {
+      "type": "EDGE",
+      "mode": "NORMAL",
+      "level_V": 1.64,
+      "holdoff_s": 5e-07,
+      "trig_state": "SAVE",
+      "run_state": "STOP",
+      "edge_source": "CH1",
+      "edge_slope": "FALL",
+      "edge_coupling": "DC"
+    },
+    "channels": {
+      "CH1": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH2": {
+        "display": true,
+        "scale_V_div": 2.0,
+        "position_div": -0.8,
+        "offset_V_center": 1.6,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH3": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH4": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      }
+    }
+  },
+  "waveforms": {
+    "CH2": {
+      "path": "evidence\\task4_preview_20261111_0254\\maximum_CH2.csv",
+      "sha256": "A3D533040F1CAB278ABCA398A7788F6F7E8F4DC965E4971F3C7CE23A3544AB26",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch2, DC coupling, 2.0E0 V/div, 1.0E-6 s/div, 2500 points, Sample mode\";Y;4.0E-9;0;6.0E-6;\"s\";8.0E-2;0.0E0;-2.0E1;\"Volts\"",
+      "channel": "CH2",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 4e-09,
+      "sample_rate_Sa_s": 249999999.99999997,
+      "t_start_s": 6e-06,
+      "t_end_s": 1.5996e-05,
+      "v_min": -0.32,
+      "v_max": 3.7600000000000002,
+      "v_mean": 2.826912,
+      "v_rms": 3.0558345504951667,
+      "v_pp": 4.08
+    },
+    "CH4": {
+      "path": "evidence\\task4_preview_20261111_0254\\maximum_CH4.csv",
+      "sha256": "0C6663B0059C7B05B6DBB98E8E92C54C8A66BB6F50CDA728F4B9E3DE8E1A9177",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch4, DC coupling, 1.0E0 V/div, 1.0E-6 s/div, 2500 points, Sample mode\";Y;4.0E-9;0;6.0E-6;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH4",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 4e-09,
+      "sample_rate_Sa_s": 249999999.99999997,
+      "t_start_s": 6e-06,
+      "t_end_s": 1.5996e-05,
+      "v_min": 2.88,
+      "v_max": 3.12,
+      "v_mean": 2.9705440000000003,
+      "v_rms": 2.970672758820803,
+      "v_pp": 0.2400000000000002
+    }
+  },
+  "errors": []
+}

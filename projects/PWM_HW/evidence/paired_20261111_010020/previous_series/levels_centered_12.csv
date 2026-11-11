@@ -1,0 +1,13 @@
+ID,source_prefix,CH1_low_V,CH1_high_V,CH2_low_V,CH2_high_V,CH3_low_V,CH3_high_V
+up_count_A6_01,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_01_20261110_192755_450,0.12,3.24,0.08,3.24,0.2,3.24
+up_count_A6_02,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_02_20261110_192800_495,0.12,3.24,0.08,3.24,0.2,3.24
+up_count_A6_03,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_03_20261110_192805_542,0.12,3.24,0.08,3.24,0.2,3.24
+up_count_A6_04,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_04_20261110_192810_625,0.12,3.24,0.08,3.24,0.2,3.24
+up_count_A6_05,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_05_20261110_192815_709,0.12,3.24,0.08,3.24,0.2,3.24
+up_count_A6_06,evidence\supplement_20261110_181526\up_count_A6_centered_raw\up_count_A6_centered_06_20261110_192821_143,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_01,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_01_20261110_192621_964,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_02,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_02_20261110_192627_039,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_03,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_03_20261110_192632_372,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_04,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_04_20261110_192637_755,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_05,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_05_20261110_192642_789,0.12,3.24,0.08,3.24,0.2,3.24
+up_down_A6_06,evidence\supplement_20261110_181526\up_down_A6_centered_raw\up_down_A6_centered_06_20261110_192647_839,0.12,3.24,0.08,3.24,0.2,3.24

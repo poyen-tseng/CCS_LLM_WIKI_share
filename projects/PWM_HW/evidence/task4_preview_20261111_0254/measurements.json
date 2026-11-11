@@ -1,0 +1,77 @@
+{
+  "maximum": {
+    "complete_cycles": [
+      {
+        "period_s": 4.99960925925926e-06,
+        "frequency_hz": 200015.63085115168,
+        "high_width_s": 4.2003392473118276e-06,
+        "pin_duty_pct": 84.01335043399267,
+        "equivalent_predeadband_duty_pct": 90.01381935952722
+      }
+    ],
+    "dac_mean_V": 2.9705440000000003,
+    "dac_median_V": 2.96,
+    "dac_min_V": 2.88,
+    "dac_max_V": 3.12,
+    "dac_peak_to_peak_V": 0.2400000000000002,
+    "time_window_s": [
+      6e-06,
+      1.5996e-05
+    ],
+    "timebase_s_div": 1e-06,
+    "sample_interval_s": 3.9999999999994535e-09
+  },
+  "minimum": {
+    "complete_cycles": [
+      {
+        "period_s": 4.999800420168067e-06,
+        "frequency_hz": 200007.98351194692,
+        "high_width_s": 2.0046520146520267e-07,
+        "pin_duty_pct": 4.009464070937137,
+        "equivalent_predeadband_duty_pct": 10.009703576295545
+      }
+    ],
+    "dac_mean_V": 0.36955199999999994,
+    "dac_median_V": 0.36,
+    "dac_min_V": 0.2,
+    "dac_max_V": 0.52,
+    "dac_peak_to_peak_V": 0.32,
+    "time_window_s": [
+      6e-06,
+      1.5996e-05
+    ],
+    "timebase_s_div": 1e-06,
+    "sample_interval_s": 3.9999999999994535e-09
+  },
+  "overview": {
+    "hysteresis_crossing_times_s": [
+      -0.048310000000000006,
+      -0.032229999999999995,
+      -0.01623,
+      -0.00027,
+      0.01577,
+      0.03177666666666667,
+      0.04777
+    ],
+    "complete_intercrossing_periods": 6,
+    "mean_period_s": 0.016013333333333334,
+    "frequency_hz": 62.44796003330558,
+    "dac_min_V": 0.28,
+    "dac_max_V": 3.08,
+    "time_window_s": [
+      -0.05,
+      0.04996
+    ],
+    "timebase_s_div": 0.01,
+    "acquisition_mode": "PEAKDETECT (ENV preamble); raw exported record retained; do not use this decimated envelope for PWM duty measurement."
+  },
+  "method": "PWM: 1.65 V threshold crossings with linear interpolation. DAC: same frozen acquisition as PWM, raw mean/median/range without filtering. Pre-deadband equivalent adds source-configured 300 ns to measured OutA high width; it is an inference.",
+  "limits": [
+    "One frozen capture at each endpoint; not repeatability testing.",
+    "Short DAC traces have noise, 0.24 Vpp at maximum and 0.32 Vpp at minimum; nearly flat describes absence of slow triangle change at this time scale, not zero ripple.",
+    "Analog triangle and endpoints support positive relationship; this run does not remeasure the whole duty-versus-time curve.",
+    "Scope 10x settings read back; physical probe switch, ground, board wiring and calibration not visually inspected.",
+    "Screenshot gate uses primary channel; the native CH3 control menu remains visible at right; gate ready=true does not certify absence of this menu.",
+    "Source binary identity based on last successful load log and archive SHA-256, not live program-memory readback."
+  ]
+}

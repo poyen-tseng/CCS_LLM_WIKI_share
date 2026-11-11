@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "i": 1,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:09.828+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_01_20261110_192209_828_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_01_20261110_192209_828_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_01_20261110_192209_828_CH3.csv"
+    },
+    {
+      "i": 2,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:14.845+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_02_20261110_192214_845_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_02_20261110_192214_845_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_02_20261110_192214_845_CH3.csv"
+    },
+    {
+      "i": 3,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:20.211+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_03_20261110_192220_211_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_03_20261110_192220_211_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_03_20261110_192220_211_CH3.csv"
+    },
+    {
+      "i": 4,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:25.529+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_04_20261110_192225_529_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_04_20261110_192225_529_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_04_20261110_192225_529_CH3.csv"
+    },
+    {
+      "i": 5,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:30.546+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_05_20261110_192230_546_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_05_20261110_192230_546_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_05_20261110_192230_546_CH3.csv"
+    },
+    {
+      "i": 6,
+      "state": "STOP",
+      "at": "2026-11-10T19:22:35.612+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_06_20261110_192235_612_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_06_20261110_192235_612_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_V4_rise_raw\\up_down_V4_rise_06_20261110_192235_612_CH3.csv"
+    }
+  ]
+}

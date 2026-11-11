@@ -1,0 +1,29 @@
+{
+  "ready": true,
+  "next_fix": "ok",
+  "source": "l0",
+  "scpi": [],
+  "l0": {
+    "violations": [],
+    "borderline": [],
+    "metrics": {
+      "vpp_div": 4.44,
+      "clipped": false,
+      "center_err_div": 0.04,
+      "trigger_frac": 0.013,
+      "edge_div": 0.023
+    },
+    "suggestion": {
+      "vdiv": 0.7,
+      "vernier": true,
+      "offset": -1.68,
+      "trigger_level": 1.68,
+      "tdiv": 2.5e-07,
+      "t_offset": 5.8181818181818315e-09
+    },
+    "label": "ok",
+    "decisive": true
+  },
+  "jev": null,
+  "checkedAt": "2026-11-10T11:24:23.879Z"
+}

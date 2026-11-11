@@ -1,0 +1,39 @@
+{
+  "change": "CH2 PWM and CH4 DAC use same 0 V reference position and same scale; native fresh captures, no image edits.",
+  "channels": {
+    "CH2": "pin80 GPIO0 OutA PWM",
+    "CH4": "pin70 DACOUTA"
+  },
+  "captures": {
+    "maximum": {
+      "zero_position_div": -1.64,
+      "scale_V_div": 1,
+      "timebase_s_div": 1e-06,
+      "dac_mean_V": 2.971248,
+      "PWM": [
+        {
+          "period_s": 4.9995868159203975e-06,
+          "high_width_s": 4.200234038142621e-06,
+          "pin_duty_pct": 84.0116232158953
+        }
+      ],
+      "gate_ready": true
+    },
+    "minimum": {
+      "zero_position_div": -1.64,
+      "scale_V_div": 1,
+      "timebase_s_div": 1e-06,
+      "dac_mean_V": 0.36783999999999994,
+      "PWM": [
+        {
+          "period_s": 4.999748287671232e-06,
+          "high_width_s": 2.002760654490108e-07,
+          "pin_duty_pct": 4.005722966951498
+        }
+      ],
+      "gate_ready": true
+    }
+  },
+  "scope_final_state": "STOP, minimum capture",
+  "writes": "New captures, CSV/settings/gates, capture script and verification package in this output directory. No firmware/PPT/workflow changes."
+}

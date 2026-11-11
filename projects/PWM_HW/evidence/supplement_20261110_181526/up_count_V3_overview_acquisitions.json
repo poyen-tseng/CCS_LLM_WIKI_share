@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "i": 1,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:28.348+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_01_20261110_191628_348_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_01_20261110_191628_348_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_01_20261110_191628_348_CH3.csv"
+    },
+    {
+      "i": 2,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:33.414+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_02_20261110_191633_414_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_02_20261110_191633_414_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_02_20261110_191633_414_CH3.csv"
+    },
+    {
+      "i": 3,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:38.798+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_03_20261110_191638_798_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_03_20261110_191638_798_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_03_20261110_191638_798_CH3.csv"
+    },
+    {
+      "i": 4,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:43.835+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_04_20261110_191643_835_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_04_20261110_191643_835_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_04_20261110_191643_835_CH3.csv"
+    },
+    {
+      "i": 5,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:49.183+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_05_20261110_191649_183_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_05_20261110_191649_183_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_05_20261110_191649_183_CH3.csv"
+    },
+    {
+      "i": 6,
+      "state": "STOP",
+      "at": "2026-11-10T19:16:54.216+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_06_20261110_191654_216_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_06_20261110_191654_216_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_count_V3_overview_raw\\up_count_V3_overview_06_20261110_191654_216_CH3.csv"
+    }
+  ]
+}

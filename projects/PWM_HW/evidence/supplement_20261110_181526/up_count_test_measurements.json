@@ -1,0 +1,18 @@
+{
+  "CH3": {
+    "FREQ": 24999.765625,
+    "PWID": 1.99792e-05,
+    "NWID": 2.002e-05,
+    "VTOP": "ERR MEASU:IMM:TYP VTOP: 102,\"Syntax error; invalid character data - MEASU:IMM:TYP VTOP\\0A\"",
+    "VBASE": "ERR MEASU:IMM:TYP VBASE: 102,\"Syntax error; invalid character data - MEASU:IMM:TYP VBASE\\0A\""
+  },
+  "CH2": {
+    "FREQ": 200009.515625,
+    "PWID": 7.002e-07
+  },
+  "CH1": {
+    "FREQ": 200073.46875,
+    "PWID": 3.7001e-06
+  },
+  "at": "2026-11-10T19:15:13.906+08:00"
+}

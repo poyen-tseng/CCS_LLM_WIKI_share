@@ -1,0 +1,137 @@
+{
+  "capture_id": "up_mid_r1",
+  "point": "up_mid",
+  "repeat": 1,
+  "state": "STOP",
+  "frozen_at": "2026-11-11T01:05:39.577+08:00",
+  "requested_delay_s": 0.004,
+  "direction": "rising",
+  "scope_trigger_slope": "RIS",
+  "same_frozen_acquisition": true,
+  "channels": {
+    "CH1": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_mid_r1_CH1.csv",
+      "sha256": "A46F67083E9934B57C0C7942BC5F30E190C6C72E15C6F885B7F116A1ED10E9E4",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch1, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;3.9875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH1",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0039875,
+      "t_end_s": 0.00401249,
+      "v_min": 3.08,
+      "v_max": 3.44,
+      "v_mean": 3.2610240000000004,
+      "v_rms": 3.261223132507189,
+      "v_pp": 0.3599999999999999
+    },
+    "CH2": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_mid_r1_CH2.csv",
+      "sha256": "DAF006E98729A948E029F9918B10D0BB1158D29F188A6D6EB230F057F39AB6B2",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch2, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;3.9875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH2",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0039875,
+      "t_end_s": 0.00401249,
+      "v_min": -0.28,
+      "v_max": 3.6,
+      "v_mean": 1.4994720000000001,
+      "v_rms": 2.167600996493589,
+      "v_pp": 3.88
+    },
+    "CH4": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_mid_r1_CH4.csv",
+      "sha256": "936A7DBA0FC6D07BF049CE229228C26F1949B33AF9A539AC9A21A9B9A341137B",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch4, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;3.9875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH4",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0039875,
+      "t_end_s": 0.00401249,
+      "v_min": 1.48,
+      "v_max": 1.84,
+      "v_mean": 1.6663520000000005,
+      "v_rms": 1.6666031561232566,
+      "v_pp": 0.3600000000000001
+    }
+  },
+  "settings": {
+    "idn": "TEKTRONIX,TDS 2014B,[IDENTIFIER_REMOVED],CF:91.1CT FV:v22.01",
+    "run_state": "STOP",
+    "timebase": {
+      "scale_s_div": 2.5e-06,
+      "position_s": 0.004
+    },
+    "acquire": {
+      "mode": "SAMPLE",
+      "averages": 16,
+      "stop_after": "SEQUENCE",
+      "state": "0",
+      "record_points": 2500
+    },
+    "trigger": {
+      "type": "EDGE",
+      "mode": "NORMAL",
+      "level_V": 1.64,
+      "holdoff_s": 5e-07,
+      "trig_state": "SAVE",
+      "run_state": "STOP",
+      "edge_source": "CH1",
+      "edge_slope": "RISE",
+      "edge_coupling": "DC"
+    },
+    "channels": {
+      "CH1": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH2": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH3": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH4": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      }
+    },
+    "saved_at": "2026-11-11T01:05:50.574+08:00"
+  }
+}

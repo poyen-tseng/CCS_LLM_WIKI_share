@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "i": 1,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:21.964+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_01_20261110_192621_964_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_01_20261110_192621_964_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_01_20261110_192621_964_CH3.csv"
+    },
+    {
+      "i": 2,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:27.039+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_02_20261110_192627_039_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_02_20261110_192627_039_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_02_20261110_192627_039_CH3.csv"
+    },
+    {
+      "i": 3,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:32.372+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_03_20261110_192632_372_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_03_20261110_192632_372_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_03_20261110_192632_372_CH3.csv"
+    },
+    {
+      "i": 4,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:37.755+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_04_20261110_192637_755_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_04_20261110_192637_755_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_04_20261110_192637_755_CH3.csv"
+    },
+    {
+      "i": 5,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:42.789+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_05_20261110_192642_789_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_05_20261110_192642_789_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_05_20261110_192642_789_CH3.csv"
+    },
+    {
+      "i": 6,
+      "state": "STOP",
+      "at": "2026-11-10T19:26:47.839+08:00",
+      "CH1": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_06_20261110_192647_839_CH1.csv",
+      "CH2": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_06_20261110_192647_839_CH2.csv",
+      "CH3": "evidence\\supplement_20261110_181526\\up_down_A6_centered_raw\\up_down_A6_centered_06_20261110_192647_839_CH3.csv"
+    }
+  ]
+}

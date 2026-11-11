@@ -1,0 +1,26 @@
+任務4：三張真實示波器 PNG，供使用者確認
+本輪僅調整與擷取示波器。未改程式、未build/load、未接線、未改PPT、未上傳、未改workflow/handoff、未啟用評審。
+示波器：TEKTRONIX TDS2014B，[IDENTIFIER_REMOVED]，FV:v22.01。
+通道：CH2 青＝pin80 GPIO0 OutA（PWM）；CH4 綠＝pin70 DACOUTA；CH1 pin79 GPIO1方向標記用於端點觸發（不顯示）。通道依據為舊稿第4頁、相關程式與觀測訊號，實體接線未目視。
+最高圖：maximum.png，1 us/div，CH2 2 V/div、CH4 1 V/div，CH1下降沿1.64 V觸發後中心11 us。腳位PWM duty 84.01335%，高脈寬4.200339 us、週期4.999609 us。DAC同筆平均2.970544 V、中位2.96 V，原始範圍2.88–3.12 V。
+最低圖：minimum.png，同時基與垂直設定，CH1上升沿1.64 V，中心11 us。腳位PWM duty 4.009464%，高脈寬0.200465 us、週期4.999800 us。DAC同筆平均0.369552 V、中位0.36 V，原始範圍0.20–0.52 V。
+總覽：overview.png，10 ms/div，100 ms記錄，CH4上升沿1.64 V，中心0。CH2 2 V/div上移、CH4 1 V/div。Peak Detect，保存ENV前導資料；PWM呈密集包絡，不用此記錄量duty。DAC約6個完整週期，CSV含遲滯交越估計62.448 Hz、16.0133 ms。
+觀察：DAC高時PWM寬，DAC低時PWM窄；短時基下DAC慢斜坡近乎水平但仍有雜訊。所有圖是原生320×240截圖，未合成、未重畫、未平滑。
+推論：程式以CMPA/500同時決定DAC code和PWM指令，並保留300 ns死區；將實測高脈寬加300 ns換算，死區前約90.0138%及10.0097%。這是依設定換算，不是另一腳位的直接測量。若要求GPIO腳位本身10–90%，須另經核准更改韌體；本輪未變更。
+韌體依據：ccs_env最後成功load為2026-11-11 01:02:16的PWM_HW_part5.out，verify=true/run=true；檔案SHA-256=10A6B51E86892A5D1529BFB8CCE1FBF88F9CB8608B0FBEF603688D2F1B267B65，與本run handoff一致。現有Init.h預設HW_PART=1，不代表已載入映像；本輪沒建置/重載，也沒連除錯器或讀程式記憶體checksum。詳firmware_provenance.json。
+限制：每端點1筆凍結擷取，未重測全段duty曲線或重複性。DAC雜訊最高0.24 Vpp/最低0.32 Vpp，不能解讀成完美直流。實體10x開關、地夾、探棒補償與供電未核對。右側保留示波器原生CH3設定選單，未遮住波形；雖三份jev_check_frame均ready=true，此工具沒有辨認出這個選單，不宣稱選單已隱藏。
+擷取一致性：每張先凍結並存CH2/CH4 CSV、設定與preamble；jev_check_frame ready=true後，再讀回兩通道逐點核對未改變，才各擷取一次PNG。各gate與PNG SHA-256均附存。
+工具問題：tek MCP長連線占USB，導致jev_check_frame報no TDS2014B。停止本輪啟動的tek MCP連線後，沿用同一tek.py短連線驅動；三份正式gate均使用jev-scope MCP完成。未改MCP設定或驅動程式。
+結束：示波器保留最低圖的STOP狀態。所有短連線已關閉；本輪未持有XDS110。
+輸出檔：
+evidence\task4_preview_20261111_0254\maximum.png
+evidence\task4_preview_20261111_0254\minimum.png
+evidence\task4_preview_20261111_0254\overview.png
+evidence\task4_preview_20261111_0254\maximum_CH2.csv
+evidence\task4_preview_20261111_0254\maximum_CH4.csv
+evidence\task4_preview_20261111_0254\minimum_CH2.csv
+evidence\task4_preview_20261111_0254\minimum_CH4.csv
+evidence\task4_preview_20261111_0254\overview_CH2.csv
+evidence\task4_preview_20261111_0254\overview_CH4.csv
+evidence\task4_preview_20261111_0254\measurements.json
+evidence\task4_preview_20261111_0254\firmware_provenance.json

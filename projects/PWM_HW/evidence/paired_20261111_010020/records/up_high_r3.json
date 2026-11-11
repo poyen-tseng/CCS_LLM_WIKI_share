@@ -1,0 +1,137 @@
+{
+  "capture_id": "up_high_r3",
+  "point": "up_high",
+  "repeat": 3,
+  "state": "STOP",
+  "frozen_at": "2026-11-11T01:08:34.138+08:00",
+  "requested_delay_s": 0.0079,
+  "direction": "rising",
+  "scope_trigger_slope": "RIS",
+  "same_frozen_acquisition": true,
+  "channels": {
+    "CH1": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_high_r3_CH1.csv",
+      "sha256": "A5763800E328F92DEFF672DA022EB94C95228015E309B43132BA4D49597ACA3D",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch1, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;7.8875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH1",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0078875,
+      "t_end_s": 0.007912490000000001,
+      "v_min": 3.12,
+      "v_max": 3.44,
+      "v_mean": 3.2564480000000002,
+      "v_rms": 3.256643671020826,
+      "v_pp": 0.31999999999999984
+    },
+    "CH2": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_high_r3_CH2.csv",
+      "sha256": "53B9929FA47075D1D7D9D92F03B42B1CAC59D2AD4FF18EFCC894785F02966928",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch2, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;7.8875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH2",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0078875,
+      "t_end_s": 0.007912490000000001,
+      "v_min": -0.08,
+      "v_max": 3.52,
+      "v_mean": 2.7711040000000002,
+      "v_rms": 3.014243308029397,
+      "v_pp": 3.6
+    },
+    "CH4": {
+      "path": "evidence\\paired_20261111_010020\\records\\up_high_r3_CH4.csv",
+      "sha256": "9A0318AA3FA531C3CE04F112FA6C4FC5BCD93F40DC4132465B19925CB7F3106D",
+      "preamble": "1;8;BIN;RI;MSB;2500;\"Ch4, DC coupling, 1.0E0 V/div, 2.5E-6 s/div, 2500 points, Sample mode\";Y;1.0E-8;0;7.8875E-3;\"s\";4.0E-2;0.0E0;-4.1E1;\"Volts\"",
+      "channel": "CH4",
+      "mode": "RECORD",
+      "points": 2500,
+      "sample_interval_s": 1e-08,
+      "sample_rate_Sa_s": 100000000.0,
+      "t_start_s": 0.0078875,
+      "t_end_s": 0.007912490000000001,
+      "v_min": 2.8000000000000003,
+      "v_max": 3.04,
+      "v_mean": 2.9396640000000005,
+      "v_rms": 2.9397921014928925,
+      "v_pp": 0.23999999999999977
+    }
+  },
+  "settings": {
+    "idn": "TEKTRONIX,TDS 2014B,[IDENTIFIER_REMOVED],CF:91.1CT FV:v22.01",
+    "run_state": "STOP",
+    "timebase": {
+      "scale_s_div": 2.5e-06,
+      "position_s": 0.0079
+    },
+    "acquire": {
+      "mode": "SAMPLE",
+      "averages": 16,
+      "stop_after": "SEQUENCE",
+      "state": "0",
+      "record_points": 2500
+    },
+    "trigger": {
+      "type": "EDGE",
+      "mode": "NORMAL",
+      "level_V": 1.64,
+      "holdoff_s": 5e-07,
+      "trig_state": "SAVE",
+      "run_state": "STOP",
+      "edge_source": "CH1",
+      "edge_slope": "RISE",
+      "edge_coupling": "DC"
+    },
+    "channels": {
+      "CH1": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH2": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH3": {
+        "display": false,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      },
+      "CH4": {
+        "display": true,
+        "scale_V_div": 1.0,
+        "position_div": -1.64,
+        "offset_V_center": 1.64,
+        "coupling": "DC",
+        "units": "V",
+        "probe": 10.0,
+        "bwlimit_20MHz": false,
+        "invert": false
+      }
+    },
+    "saved_at": "2026-11-11T01:08:45.123+08:00"
+  }
+}

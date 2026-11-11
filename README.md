@@ -63,6 +63,10 @@ JEV 的公開專案路徑相對於 `tools/JEV_accel/` 解析，私人專案透�
 
 操作規格在 [TASK.md](projects/Timer_HW/TASK.md)，進度與實測值在 [STATUS.md](projects/Timer_HW/STATUS.md)。`TIMER_HW/tools/timer_math.py` 不需硬體即可驗算 PRD 與輸出頻率。
 
+## PWM_HW（report3）
+
+[PWM_HW](projects/PWM_HW/README.md) 保存 F280049C 的 200 kHz PWM、300 ns死區、ISR標記與 PWM／DAC 調變實驗。包含原五版與兩個三通道補測 CCS 專案、去識別CSV／原生波形、建置說明及量測限制；PPT與課程講義未公開。進度見 [STATUS.md](projects/PWM_HW/STATUS.md)。
+
 ## MCP
 
 給人閱讀的 [示波器網路設定](docs/wiki/scope-network-setup.md) 說明兩台示波器與 Windows 網卡的 IP、遮罩、閘道、DNS、面板操作與連線驗證。

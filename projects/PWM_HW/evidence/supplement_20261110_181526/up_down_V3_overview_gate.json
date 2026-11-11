@@ -1,0 +1,33 @@
+{
+  "ready": true,
+  "next_fix": "ok",
+  "source": "l0",
+  "scpi": [],
+  "l0": {
+    "violations": [],
+    "borderline": [],
+    "metrics": {
+      "vpp_div": 3.6,
+      "clipped": false,
+      "center_err_div": 0.08,
+      "trigger_frac": 0.026,
+      "visible_periods": 1.2494968762578094
+    },
+    "suggestion": {
+      "vdiv": 0.6,
+      "vernier": true,
+      "offset": -1.72,
+      "trigger_level": 1.72,
+      "tdiv": 5e-06
+    },
+    "label": "ok",
+    "decisive": true
+  },
+  "jev": null,
+  "measurements": {
+    "PER": 4.00001e-05,
+    "VTOP": 3.24,
+    "VBASE": 0.2
+  },
+  "checkedAt": "2026-11-10T11:20:28.653Z"
+}

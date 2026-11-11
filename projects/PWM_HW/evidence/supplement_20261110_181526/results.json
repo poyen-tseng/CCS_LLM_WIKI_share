@@ -1,0 +1,267 @@
+{
+  "run": "F280049C_5_PWM_3_HW_20261110_150311",
+  "spec": {
+    "version": "v1.0",
+    "sha256": "204166F87D337398BBF131A9DD410482ADD5B490F5E07823709C603E9BB501FB"
+  },
+  "generated": "2026-11-10T17:04:40+08:00",
+  "instrument": "TEKTRONIX TDS 2014B s/n [IDENTIFIER_REMOVED] FV:v22.01",
+  "channelMap": {
+    "CH2": "J8 pin 80 GPIO0 OutA (EPWM1A)",
+    "CH1": "J8 pin 79 GPIO1 (OutB / ISR GPIO / ramp marker)"
+  },
+  "probe": "10x both channels, DC, BW limit off",
+  "method": "1.65 V crossings, linear interpolation on 2500-point CSV",
+  "overall": {
+    "PASS": 13,
+    "FAIL": 0,
+    "PENDING": 1
+  },
+  "requirements": [
+    {
+      "id": "A1",
+      "item": "PWM frequency, both modes, both pins",
+      "expected": "200.0 kHz (5.000 us)",
+      "tolerance": "±1 % (198–202 kHz)",
+      "measured": {
+        "part1 OutA": "200.000 kHz (err +0.000 %)",
+        "part1 OutB": "200.038 kHz (err +0.019 %)",
+        "part2 OutA": "199.995 kHz (err -0.002 %)",
+        "part2 OutB": "200.018 kHz (err +0.009 %)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up/V1_part1_scope_meas_2p5us.json",
+        "B2_updown/V1_part2_scope_meas_2p5us.json",
+        "B1_up/V1_part1_overview.png",
+        "B2_updown/V1_part2_overview.png"
+      ],
+      "note": "TDS2014B FREQ at 2.5 us/div"
+    },
+    {
+      "id": "A2",
+      "item": "OutA high time (pin 80)",
+      "expected": "0.700 us",
+      "tolerance": "±30 ns",
+      "measured": {
+        "part1 scope PWI": "699.8 ns (err -0.20 ns)",
+        "part2 scope PWI": "700.1 ns (err +0.10 ns)",
+        "part1 CSV V2b mean": "700.22 ns (err +0.22 ns)",
+        "part2 CSV V2b mean": "700.29 ns (err +0.29 ns)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up/V1_part1_scope_meas_2p5us.json",
+        "B2_updown/V1_part2_scope_meas_2p5us.json",
+        "B1_up\\V2b_part1_deadtime_Bfall_Arise_result.json",
+        "B2_updown\\V2b_part2_deadtime_Bfall_Arise_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A3",
+      "item": "OutB high time (pin 79)",
+      "expected": "3.700 us",
+      "tolerance": "±30 ns",
+      "measured": {
+        "part1": "3699.9 ns (err -0.10 ns)",
+        "part2": "3700.0 ns (err +0.00 ns)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up/V1_part1_scope_meas_2p5us.json",
+        "B2_updown/V1_part2_scope_meas_2p5us.json"
+      ],
+      "note": "scope PWI on a 10 ns/sample record (2.5 us/div)"
+    },
+    {
+      "id": "A4",
+      "item": "ePWMxA width = t(OutA fall) - t(OutB fall) (20 % duty)",
+      "expected": "1.000 us",
+      "tolerance": "±30 ns, every record",
+      "measured": {
+        "part1": "n=6 mean 998.87 ns, min 998.71, max 999.05 (duty 19.977 %)",
+        "part2": "n=6 mean 998.92 ns, min 998.75, max 999.08 (duty 19.978 %)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up\\V2b_part1_deadtime_Bfall_Arise_result.json",
+        "B2_updown\\V2b_part2_deadtime_Bfall_Arise_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A5",
+      "item": "Dead time A fall->B rise and B fall->A rise",
+      "expected": "300 ns",
+      "tolerance": "±30 ns, every record",
+      "measured": {
+        "part1 A->B": "n=6 mean 300.52 ns, min 300.43, max 300.6",
+        "part1 B->A": "n=6 mean 298.65 ns, min 298.5, max 298.8",
+        "part2 A->B": "n=6 mean 300.63 ns, min 300.57, max 300.72",
+        "part2 B->A": "n=6 mean 298.63 ns, min 298.49, max 298.76"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up\\V2a_part1_result.json",
+        "B1_up\\V2b_part1_deadtime_Bfall_Arise_result.json",
+        "B2_updown\\V2a_part2_deadtime_Afall_Brise_result.json",
+        "B2_updown\\V2b_part2_deadtime_Bfall_Arise_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A6",
+      "item": "Logic levels",
+      "expected": "3.3 V / 0 V",
+      "tolerance": "VTOP ≥ 3.0 V, VBASE ≤ 0.3 V",
+      "measured": {
+        "part1 OutA": "VTOP 3.24 V, VBASE 0.08 V",
+        "part1 OutB": "VTOP 3.24 V, VBASE 0.12 V",
+        "part2 OutA": "VTOP 3.24 V, VBASE 0.08 V",
+        "part2 OutB": "VTOP 3.24 V, VBASE 0.08 V"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B1_up/V1_part1_overview_*.csv",
+        "B2_updown/V1_part2_overview_shot_*.csv"
+      ],
+      "note": "median of the upper / lower half of the 2500-point record; 8-bit, 1 V/div"
+    },
+    {
+      "id": "A7",
+      "item": "Interrupt every 4 events: OutA pulses per GPIO half period",
+      "expected": "4",
+      "tolerance": "exact",
+      "measured": {
+        "part3 Up-Count": "10 half periods, counts [4]",
+        "part4 Up-Down": "10 half periods, counts [4]"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B3_up_isr/V3_part3_isr_overview.png",
+        "B3_up_isr/V3_part3_isr_overview_result.json",
+        "B4_updown_isr/V3_part4_isr_overview.png",
+        "B4_updown_isr/V3_part4_isr_overview_result.json"
+      ],
+      "note": "confirms O2: ETINTPS.INTPRD2 = 4 gives one interrupt per 4 CTR=0 events"
+    },
+    {
+      "id": "A8",
+      "item": "ISR GPIO square (pin 79)",
+      "expected": "25.0 kHz, high/low 20 us",
+      "tolerance": "±1 % (24.75–25.25 kHz; 19.8–20.2 us)",
+      "measured": {
+        "part3": "25.0000 kHz, PWI 19.9686 us, NWI 20.0205 us",
+        "part4": "24.9998 kHz, PWI 19.9792 us, NWI 20.0189 us"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B3_up_isr/V3_part3_scope_meas.json",
+        "B4_updown_isr/V3_part4_scope_meas.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A9",
+      "item": "ISR entry delta repeatable (same mode, same edge)",
+      "expected": "measured",
+      "tolerance": "max-min ≤ 50 ns over ≥5 records",
+      "measured": {
+        "up rise": "n=6 mean 267.61 ns, spread 0.2 ns",
+        "up fall": "n=6 mean 247.62 ns, spread 0.15 ns",
+        "updown rise": "n=6 mean 268.57 ns, spread 0.3 ns",
+        "updown fall": "n=6 mean 248.68 ns, spread 0.3 ns"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B3_up_isr\\V4_part3_isr_rise_result.json",
+        "B3_up_isr\\V4_part3_isr_fall_result.json",
+        "B4_updown_isr\\V4_part4_isr_rise_result.json",
+        "B4_updown_isr\\V4_part4_isr_fall_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A10",
+      "item": "Mode relation: GPIO edge vs OutA rise, Up-Down minus Up-Count",
+      "expected": "≈ 500 ns",
+      "tolerance": "450–550 ns",
+      "measured": {
+        "rise edge": "499.98 ns (Up -31.04 ns, Up-Down 468.94 ns)",
+        "fall edge": "500.01 ns (Up -51.03 ns, Up-Down 448.98 ns)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B3_up_isr\\V4_part3_isr_rise_result.json",
+        "B3_up_isr\\V4_part3_isr_fall_result.json",
+        "B4_updown_isr\\V4_part4_isr_rise_result.json",
+        "B4_updown_isr\\V4_part4_isr_fall_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A11",
+      "item": "Delta independent of mode",
+      "expected": "Δ_Up ≈ Δ_UpDown",
+      "tolerance": "≤ 50 ns",
+      "measured": {
+        "rise edge": "|267.61 - 268.57| = 0.96 ns",
+        "fall edge": "|247.62 - 248.68| = 1.06 ns"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B3_up_isr\\V4_part3_isr_rise_result.json",
+        "B3_up_isr\\V4_part3_isr_fall_result.json",
+        "B4_updown_isr\\V4_part4_isr_rise_result.json",
+        "B4_updown_isr\\V4_part4_isr_fall_result.json"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A12",
+      "item": "R4 ramp marker (pin 79)",
+      "expected": "62.5 Hz (16.000 ms), 50 %",
+      "tolerance": "±1 % (61.875–63.125 Hz)",
+      "measured": {
+        "part5": "FREQ 62.5388 Hz, PER 16.0000 ms (= 62.5000 Hz), PWI 7.9995 ms, NWI 8.0000 ms, duty 50.000 %"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B5_ramp/V5a_part5_scope_meas.json",
+        "B5_ramp/V5a_part5_marker_overview.png"
+      ],
+      "note": ""
+    },
+    {
+      "id": "A13",
+      "item": "R4 duty points: OutA PWI vs time (18 spec points)",
+      "expected": "(50 ± t/20 us) × 10 ns − 300 ns",
+      "tolerance": "±30 ns, all 18",
+      "measured": {
+        "spec points": "18/18 PASS, error -10.14 … 10.93 ns",
+        "end values (supplementary t=10 us)": "rise 0.1999 us (exp 0.2), fall 4.2004 us (exp 4.2)"
+      },
+      "verdict": "PASS",
+      "sources": [
+        "B5_ramp/V5b_points_result.json",
+        "B5_ramp/V5b_csv/",
+        "B5_ramp/V5b_part5_rise_t4ms.png",
+        "B5_ramp/V5b_part5_fall_t4ms.png"
+      ],
+      "note": "rise points read ≈10 ns low and fall points ≈10 ns high: the pulse shows the CMPA written by the previous ISR (shadow load at CTR=0), i.e. one count of lag; 0.2 us / 4.2 us ends measured with supplementary t = 10 us points"
+    },
+    {
+      "id": "A14",
+      "item": "DAC triangle on pin 70",
+      "expected": "0.33 V ↔ 2.97 V, 62.5 Hz",
+      "tolerance": "±0.1 V, ±1 %",
+      "measured": "not measured: pin 70 has no probe (O3)",
+      "verdict": "PENDING",
+      "sources": [
+        "B5_ramp/adc_readback.csv (internal ADC readback by CCS stage, NOT oscilloscope)"
+      ],
+      "note": "internal ADC readback 0.3255–2.9624 V, peak 8.02 ms — reference only, not a scope result"
+    }
+  ]
+}
